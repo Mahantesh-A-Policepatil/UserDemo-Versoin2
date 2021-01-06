@@ -15,26 +15,23 @@
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
-   
 });
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
- //the route below is for viewing all users
- $router->get('users', 'UserController@index');
+	 //the route below is for viewing all users
+	 $router->get('users', 'UserController@index');
 
- //the route below is for viewing one user
- $router->get('users/view/{id}', 'UserController@show');
+	 //the route below is for viewing one user
+	 $router->get('users/view/{id}', 'UserController@show');
 
- //the route below is for creating a new user
- $router->post('users/add', 'UserController@store');
+	 //the route below is for creating a new user
+	 $router->post('users/add', 'UserController@store');
 
- //the route below is for updating the information of a user
- $router->post('users/update/{id}', 'UserController@update');
+	 //the route below is for updating the information of a user
+	 $router->post('users/update/{id}', 'UserController@update');
 
- //the route below is for deleting a user from the database
- $router->delete('users/delete/{id}', 'UserController@destroy');
-
-
+	 //the route below is for deleting a user from the database
+	 $router->delete('users/delete/{id}', 'UserController@destroy');
 
 });
