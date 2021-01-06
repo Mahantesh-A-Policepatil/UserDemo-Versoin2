@@ -80,7 +80,7 @@ class UserController extends Controller{
     $user->address = $request->get('address');
    
     $user->update();
-    
+
     return response()->json($user);
   }  
 
@@ -92,8 +92,12 @@ class UserController extends Controller{
    */
   public function destroy($id){
       $user  = User::find($id);
-      $user->delete();
-      return response()->json('Removed successfully.');
+      if($user) {
+        $user->delete();
+        return response()->json('User Removed successfully.');
+      }else{
+        return response()->json('User does not exists.');
+      }
   }
 
   
