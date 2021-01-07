@@ -97,7 +97,7 @@ class UserController extends Controller{
 
       return response()->json($user);
     }else{
-      return response()->json('User does not exists.');
+      return response()->json(['status' => 'User does not exists.']);
     }
   }  
 
@@ -111,13 +111,19 @@ class UserController extends Controller{
       $user  = User::find($id);
       if($user) {
         $user->delete();
-        return response()->json('User Removed successfully.');
+        return response()->json(['status' => 'User Removed successfully.']);
       }else{
-        return response()->json('User does not exists.');
+        return response()->json(['status' => 'User does not exists.']);
       }
   }
 
-  //
+  /**
+   * Login:Authenticate a user
+   *
+   * @param  string  $email
+   * @param  string  $password
+   * @return \Illuminate\Http\Response
+   */
   public function authenticate(Request $request){
 
     $this->validate($request, [
@@ -136,9 +142,6 @@ class UserController extends Controller{
 
   }
    
-
-  //
-
   
 }
 ?>
