@@ -52,7 +52,7 @@ class UserController extends Controller{
     $this->validate($request, [
         'username'=>'required',
         'email'=>'required|email|unique:users',
-        'mobile'=>'required',
+        'mobile'=>'required|unique:users',
         'password'=>'required'
     ]);
 
@@ -81,7 +81,7 @@ class UserController extends Controller{
     $this->validate($request, [
         'username'=>'required',
         'email'=>'required|email|unique:users',
-        'mobile'=>'required',
+        'mobile'=>'required|unique:users',
         'password'=>'required'
     ]);
 
@@ -128,7 +128,7 @@ class UserController extends Controller{
       User::where('email', $request->get('email'))->update(['api_key' => "$apikey"]);;
       return response()->json(['status' => 'success','api_key' => $apikey]);
     }else{
-      return response()->json(['status' => 'fail'],401);
+      return response()->json(['status' => 'Login Failed!, Incorrect User name or password'],401);
     }
 
   }
