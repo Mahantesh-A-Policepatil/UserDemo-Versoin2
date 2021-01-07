@@ -6,6 +6,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
  
 class UserController extends Controller{
 
@@ -14,10 +16,18 @@ class UserController extends Controller{
  *
  * @return \Illuminate\Http\Response
  */
-  public function index(){
-
+  public function index(Request $request){
+ 
+    $userName = $request->get('name');
+      
+    if($userName){
+      $user  = User::where('username', 'like',$userName."%")->get();
+      return response()->json($user);
+    }else{
       $user  = User::all();
       return response()->json($user);
+    }
+      
   }
 
 /**
@@ -28,8 +38,8 @@ class UserController extends Controller{
  */
   public function show($id){
 
-      $user  = User::find($id);
-      return response()->json($user);
+    $user  = User::find($id);
+    return response()->json($user);
   }
 
  /**
@@ -40,16 +50,18 @@ class UserController extends Controller{
   public function store(Request $request){
  
     $this->validate($request, [
-        'name'=>'required',
+        'username'=>'required',
         'email'=>'required|email|unique:users',
-        'mobile'=>'required'
+        'mobile'=>'required',
+        'password'=>'required'
     ]);
 
      $user = new User([
-        'name' => $request->get('name'),
+        'username' => $request->get('username'),
         'email' => $request->get('email'),
         'mobile' => $request->get('mobile'),
-        'address' => $request->get('address')
+        'address' => $request->get('address'),
+        'password' => Hash::make($request->get('password'))
      ]);
      $user->save();
    
@@ -67,17 +79,19 @@ class UserController extends Controller{
   public function update(Request $request, $id){
 
     $this->validate($request, [
-        'name'=>'required',
+        'username'=>'required',
         'email'=>'required|email|unique:users',
-        'mobile'=>'required'
+        'mobile'=>'required',
+        'password'=>'required'
     ]);
 
     $user  = User::find($id);
 
-    $user->name = $request->get('name');
+    $user->username = $request->get('username');
     $user->email = $request->get('email');
     $user->mobile = $request->get('mobile');
     $user->address = $request->get('address');
+    $user->password = Hash::make($request->get('password'));
    
     $user->update();
 
@@ -99,6 +113,28 @@ class UserController extends Controller{
         return response()->json('User does not exists.');
       }
   }
+
+  //
+  public function authenticate(Request $request){
+
+    $this->validate($request, [
+       'email' => 'required',
+       'password' => 'required'
+    ]);
+    $user = User::where('email', $request->get('email'))->first();
+
+    if(Hash::check($request->get('password'), $user->password)){
+      $apikey = base64_encode(Str::random(40));
+      User::where('email', $request->get('email'))->update(['api_key' => "$apikey"]);;
+      return response()->json(['status' => 'success','api_key' => $apikey]);
+    }else{
+      return response()->json(['status' => 'fail'],401);
+    }
+
+  }
+   
+
+  //
 
   
 }

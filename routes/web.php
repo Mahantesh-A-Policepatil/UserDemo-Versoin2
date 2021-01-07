@@ -17,13 +17,13 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1'], function () use ($router) {
+$router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
 
 	 //the route below is for viewing all users
 	 $router->get('users', 'UserController@index');
 
 	 //the route below is for viewing one user
-	 $router->get('users/view/{id}', 'UserController@show');
+	 $router->get('user/{id}', 'UserController@show');
 
 	 //the route below is for creating a new user
 	 $router->post('users/add', 'UserController@store');
@@ -34,4 +34,13 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 	 //the route below is for deleting a user from the database
 	 $router->delete('users/delete/{id}', 'UserController@destroy');
 
+});
+
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+	 //the route below is for creating/regsitering a new user
+	 $router->post('users/add', 'UserController@store');
+
+	  //the route below is for login
+	 $router->post('users/login', 'UserController@authenticate');
 });
