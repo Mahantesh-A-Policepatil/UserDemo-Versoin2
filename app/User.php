@@ -15,12 +15,14 @@ class User extends Model
 	   'email', 
 	   'mobile', 
 	   'address', 
+	   'api_key',
 	   'created_at', 
 	   'updated_at'
    ];   
 
    protected $hidden = [
-   		'password'
+   		'password',
+   		'api_key'
    ];
 }
 ?>

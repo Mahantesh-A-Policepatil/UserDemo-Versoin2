@@ -86,16 +86,19 @@ class UserController extends Controller{
     ]);
 
     $user  = User::find($id);
+    if($user) {
+      $user->username = $request->get('username');
+      $user->email = $request->get('email');
+      $user->mobile = $request->get('mobile');
+      $user->address = $request->get('address');
+      $user->password = Hash::make($request->get('password'));
+     
+      $user->update();
 
-    $user->username = $request->get('username');
-    $user->email = $request->get('email');
-    $user->mobile = $request->get('mobile');
-    $user->address = $request->get('address');
-    $user->password = Hash::make($request->get('password'));
-   
-    $user->update();
-
-    return response()->json($user);
+      return response()->json($user);
+    }else{
+      return response()->json('User does not exists.');
+    }
   }  
 
   /**
