@@ -23,7 +23,7 @@
       $userName = $request->get('name');
         
       if($userName){
-        $user  = User::where('username', 'like',$userName."%")->get();
+        $user  = User::where('username', 'like', $userName."%")->get();
         return response()->json($user);
       }else{
         $user  = User::all();
@@ -89,9 +89,7 @@
           'username'=>'required',
           'email' => ['required',Rule::unique('users')->ignore($user->id)],
           'mobile' => ['required',Rule::unique('users')->ignore($user->id)],
-          //'email'=>'required|email|unique:users',
-          //'mobile'=>'required|unique:users',
-          'password'=>'required'
+          //'password'=>'required'
       ]);
 
       $user->username = $request->get('username');
@@ -132,7 +130,7 @@
     public function authenticate(Request $request){
 
       $this->validate($request, [
-         'email' => 'required',
+         'email' => 'required|email',
          'password' => 'required'
       ]);
       $user = User::where('email', $request->get('email'))->first();
