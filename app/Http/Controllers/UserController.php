@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Auth;
  
 class UserController extends Controller{
 
@@ -141,6 +142,19 @@ class UserController extends Controller{
     }
 
   }
+
+  /*
+* This function will get the authenticated user
+* unset and save the api token
+*/
+public function logout() {
+  $user = Auth::user();
+  //print_r($user); exit;
+  $user->api_key = null;
+  $user->save();
+  //return $this->outputJSON(null,"Successfully Logged Out"); 
+  return response()->json(['status' => 'Successfully Logged Out']);
+}
    
   
 }

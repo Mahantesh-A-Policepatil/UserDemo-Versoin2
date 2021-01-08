@@ -7,7 +7,8 @@ use Illuminate\Auth\Authenticatable as AuthenticableTrait;
  
 class User extends Model
 { 
-   use AuthenticableTrait;	
+   use AuthenticableTrait;
+   	
    protected $fillable = [
 	   'id', 
 	   'username', 

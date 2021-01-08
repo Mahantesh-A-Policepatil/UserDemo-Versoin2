@@ -34,6 +34,9 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 //the route below is for deleting a user from the database
 	 $router->delete('users/delete/{id}', 'UserController@destroy');
 
+	  //the route below is for logout
+	 $router->get('users/logout', 'UserController@logout');
+
 });
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
