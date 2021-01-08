@@ -44,6 +44,6 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 	 //the route below is for creating/regsitering a new user
 	 $router->post('users/add', 'UserController@store');
 
-	  //the route below is for login
+	 //the route below is for login
 	 $router->post('users/login', 'UserController@authenticate');
 });

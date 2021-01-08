@@ -8,7 +8,7 @@ use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 class User extends Model
 { 
    use AuthenticableTrait;
-   	
+
    protected $fillable = [
 	   'id', 
 	   'username', 
@@ -22,8 +22,21 @@ class User extends Model
    ];   
 
    protected $hidden = [
-   		'password',
-   		'api_key'
+		'password',
+		'api_key'
+   ];
+
+   protected $dates = [
+       'created_at', 
+	   'updated_at'
+   ];
+
+   protected $casts = [
+	  /* 'created_at' => 'datetime:Y-m-d H:i:s',
+	   'updated_at' => 'datetime:Y-m-d H:i:s'*/
+
+	   'created_at' => 'datetime:Y-m-d g:iA',
+	   'updated_at' => 'datetime:Y-m-d g:iA'
    ];
 }
 ?>
