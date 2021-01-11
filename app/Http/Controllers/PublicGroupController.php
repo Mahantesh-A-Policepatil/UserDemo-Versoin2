@@ -55,11 +55,17 @@
           'group_name'=>'required',
           'group_member_id'=>'required'
       ]);
-
+	  $group_desc = '';
+      if($request->get('group_desc')){ 
+      	 $group_desc = $request->get('group_desc');
+  	  }
+      else{  
+      	$group_desc = null;
+      }
        $publicGroup = new User([
           'group_name' => $request->get('group_name'),
           'group_member_id' => $request->get('group_member_id'),
-          'group_desc' => isset($request->get('group_desc')) ? $request->get('group_desc') : null;
+          'group_desc' => $group_desc;
        ]);
        $publicGroup->save();
      
@@ -85,10 +91,16 @@
           'group_name'=>'required',
           'group_member_id'=>'required'
       ]);
-
+      $group_desc = '';
+      if($request->get('group_desc')){ 
+      	 $group_desc = $request->get('group_desc');
+  	  }
+      else{  
+      	$group_desc = null;
+      }
       $publicGroup->group_name = $request->get('group_name');
       $publicGroup->group_member_id = $request->get('group_member_id');
-      $publicGroup->group_desc = isset($request->get('group_desc')) ? $request->get('group_desc') : null;
+      $publicGroup->group_desc = $group_desc;
     
      
       $publicGroup->update();
