@@ -2,129 +2,73 @@
  
   namespace App\Http\Controllers;
    
-  use App\PublicGroups;
+  use App\Groups;
+  use App\GroupsMembers;
   use App\Http\Controllers\Controller;
   use Illuminate\Http\Request;
   use Response;
-  use Illuminate\Support\Facades\Hash;
-  use Illuminate\Support\Str;
   use Auth;
   use Illuminate\Validation\Rule;
 
   class PublicGroupController extends Controller{
 
-   /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  	public function index(Request $request){
-   
-      $groupName = $request->get('group_name');
-        
-      if($groupName){
-        $publicGroups  = PublicGroups::where('group_name', 'like', $userName."%")->get();
-        return response()->json($publicGroups);
-      }else{
-        $publicGroups  = PublicGroups::all();
-        return response()->json($publicGroups);
-      }
-        
-    }
+    public function joinPublicGroup(Request $request){
 
-    /**
-   * Display the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-    public function show($id){
+        $this->validate($request, [
+            'group_id'=>'required',
+            'group_member_id'=>'required'
+        ]);
 
-      $publicGroup  = PublicGroups::find($id);
-      return response()->json($publicGroup);
-    }
+        if(Groups::where('id', '=', $request->get('group_id'))
+          ->where('is_public_group','=',0)
+          ->exists()
+        ){
+          return response()->json(['error' => 'You are not authorized to join this group as this is not a public group'], 401);
+        }
 
-     /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   
-    public function store(Request $request){
-   
-      $this->validate($request, [
-          'group_name'=>'required',
-          'group_member_id'=>'required'
-      ]);
-	  $group_desc = '';
-      if($request->get('group_desc')){ 
-      	 $group_desc = $request->get('group_desc');
-  	  }
-      else{  
-      	$group_desc = null;
-      }
-       $publicGroup = new User([
-          'group_name' => $request->get('group_name'),
-          'group_member_id' => $request->get('group_member_id'),
-          'group_desc' => $group_desc;
+        if (GroupsMembers::where('group_id', '=', $request->get('group_id'))
+                        ->where('group_member_id', '=',$request->get('group_member_id'))
+                        ->exists()
+            ){
+          // user already exists
+          return response()->json(['status' => 'User already exists.']);
+        }
+
+        $publicGroup = new GroupsMembers([
+          'group_id' => $request->get('group_id'),
+          'group_member_id' => $request->get('group_member_id')
        ]);
        $publicGroup->save();
-     
-      return response()->json($publicGroup);
-   
-    }
-   */
-    /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-    public function update(Request $request, $id){
+       return response()->json($publicGroup);
+     }
 
-      $publicGroup  = PublicGroups::find($id);
-      if(!$publicGroup) {
-        return response()->json(['status' => 'Group does not exists.']);
-      }
+    public function leavePublicGroup(Request $request){
 
       $this->validate($request, [
-          'group_name'=>'required',
+          'group_id'=>'required',
           'group_member_id'=>'required'
       ]);
-      $group_desc = '';
-      if($request->get('group_desc')){ 
-      	 $group_desc = $request->get('group_desc');
-  	  }
-      else{  
-      	$group_desc = null;
-      }
-      $publicGroup->group_name = $request->get('group_name');
-      $publicGroup->group_member_id = $request->get('group_member_id');
-      $publicGroup->group_desc = $group_desc;
-    
-     
-      $publicGroup->update();
 
-      return response()->json($publicGroup);
-      
-    }  
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id){
-        $publicGroup  = PublicGroups::find($id);
-        if($publicGroup){
-          $publicGroup->delete();
-          return response()->json(['status' => 'Group Removed successfully.']);
-        }else{
-          return response()->json(['status' => 'Group does not exists.']);
+      if(Groups::where('id', '=', $request->get('group_id'))
+          ->where('is_public_group','=',0)
+          ->exists()
+        ){
+          return response()->json(['error' => 'You are not authorized to join this group as this is not a public group'], 401);
         }
-    }
 
+      if (GroupsMembers::where('group_id', '=', $request->get('group_id'))
+                        ->where('group_member_id', '=',$request->get('group_member_id'))
+                        ->exists()
+         ){
+        $groupMember  = GroupsMembers::where('group_id', '=', $request->get('group_id'))
+                                    ->where('group_member_id', '=', $request->get('group_member_id'))
+                                    ->first();
+        $groupMember->delete();
+        return response()->json(['status' => 'User left the group successfully.']);
+      }else{
+        return response()->json(['status' => 'User does not exists in this public group.']);
+      }
 
+   }
 
   }

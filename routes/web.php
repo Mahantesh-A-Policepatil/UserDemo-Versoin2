@@ -38,26 +38,38 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 $router->get('users/logout', 'UserController@logout');
 
 	 //the route below is for viewing all users
-	 $router->get('publicGroups', 'PublicGroupController@index');
+	 $router->get('groups', 'GroupController@index');
 
 	 //the route below is for viewing one user
-	 $router->get('publicGroups/{id}', 'PublicGroupController@show');
+	 $router->get('groups/{id}', 'GroupController@show');
 
 	 //the route below is for viewing all users
-	 $router->get('publicGroups/join/{id}', 'PublicGroupController@update');
+	 $router->post('groups/add', 'GroupController@store');
 
 	 //the route below is for updating the information of a user
-	 //$router->post('publicGroups/update/{id}', 'publicGroups@update');
+	 $router->post('groups/update/{id}', 'GroupController@update');
 
-	 //the route below is for deleting a user from the database
-	 $router->delete('publicGroups/leave/{id}', 'publicGroups@destroy');
+	 //the route below is for deleting a group from the database
+	 $router->delete('groups/delete/{id}', 'GroupController@destroy');
+
+	 //the route below is for logged-in user to join a public group
+	 $router->post('groups/joinPublicGroup', 'PublicGroupController@joinPublicGroup');
+
+	 //the route below is for logged-in user to leave a public group
+	 $router->post('groups/leavePublicGroup', 'PublicGroupController@leavePublicGroup');
+
+	 //the route below is for group-owner to add users into his private group
+	 $router->post('groups/addUserToPrivateGroup', 'PrivateGroupController@addUserToPrivateGroup');
+
+	  //the route below is for group-owner to delete users from his private group
+	 $router->post('groups/removeUserFromPrivateGroup', 'PrivateGroupController@removeUserFromPrivateGroup');
 
 });
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
 	 //the route below is for creating/regsitering a new user
-	 //$router->post('users/add', 'UserController@store');
+	 //$router->post('users/register', 'UserController@store');
 
 	 //the route below is for login
 	 $router->post('users/login', 'UserController@authenticate');

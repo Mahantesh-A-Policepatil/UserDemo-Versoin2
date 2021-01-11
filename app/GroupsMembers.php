@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
-class PublicGroups extends Model
+class GroupsMembers extends Model
 {
 	protected $fillable = [
 	   'id', 
-	   'group_name', 
-	   'group_desc',
-	   'group_member_id', 
+	   'group_id', 
+	   'group_member_id',
 	   'created_at', 
 	   'updated_at'
    ];   

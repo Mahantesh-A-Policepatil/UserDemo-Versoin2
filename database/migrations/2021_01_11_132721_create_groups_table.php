@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePublicGroupsTable extends Migration
+class CreateGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreatePublicGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('public_groups', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('group_name')->unique();
             $table->string('group_desc')->nullable();
-            $table->unsignedBigInteger('group_member_id');
-            $table->foreign('group_member_id')->references('id')->on('users');
+            $table->boolean('is_public_group')->default(0); // 0:Private Group 1:Public Group
+            $table->unsignedBigInteger('group_owner_id');
+            $table->foreign('group_owner_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreatePublicGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('public_groups');
+        Schema::dropIfExists('groups');
     }
 }
