@@ -37,12 +37,27 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	  //the route below is for logout
 	 $router->get('users/logout', 'UserController@logout');
 
+	 //the route below is for viewing all users
+	 $router->get('publicGroups', 'PublicGroupController@index');
+
+	 //the route below is for viewing one user
+	 $router->get('publicGroups/{id}', 'PublicGroupController@show');
+
+	 //the route below is for viewing all users
+	 $router->get('publicGroups/join/{id}', 'PublicGroupController@update');
+
+	 //the route below is for updating the information of a user
+	 //$router->post('publicGroups/update/{id}', 'publicGroups@update');
+
+	 //the route below is for deleting a user from the database
+	 $router->delete('publicGroups/leave/{id}', 'publicGroups@destroy');
+
 });
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
 	 //the route below is for creating/regsitering a new user
-	 $router->post('users/add', 'UserController@store');
+	 //$router->post('users/add', 'UserController@store');
 
 	 //the route below is for login
 	 $router->post('users/login', 'UserController@authenticate');
