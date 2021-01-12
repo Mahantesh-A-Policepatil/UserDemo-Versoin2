@@ -7,9 +7,9 @@
 | Application Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
+| Here is where you can register all of The routes for an application.
+| It is a breeze. Simply tell Lumen The URIs it should respond to
+| and give it The Closure to call when that URI is requested.
 |
 */
 
@@ -19,58 +19,55 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
 
-	 //the route below is for viewing all users
-	 $router->get('users', 'UserController@index');
-
-	 //the route below is for viewing one user
-	 $router->get('user/{id}', 'UserController@show');
-
-	 //the route below is for creating a new user
-	 $router->post('users/add', 'UserController@store');
-
-	 //the route below is for updating the information of a user
-	 $router->post('users/update/{id}', 'UserController@update');
-
-	 //the route below is for deleting a user from the database
-	 $router->delete('users/delete/{id}', 'UserController@destroy');
-
-	  //the route below is for logout
+	 //The following route is for logout
 	 $router->get('users/logout', 'UserController@logout');
 
-	 //the route below is for viewing all users
+	 //The following route is for viewing all users
+	 $router->get('users', 'UserController@index');
+
+	 //The following route is for viewing one user
+	 $router->get('users/{user_id}', 'UserController@show');
+
+	 //The following route is for updating The information of a user
+	 $router->put('users/update/{user_id}', 'UserController@update');
+
+	 //The following route is for deleting a user from The database
+	 $router->delete('users/delete/{user_id}', 'UserController@destroy');
+	
+	 //The following route is for viewing all users
 	 $router->get('groups', 'GroupController@index');
 
-	 //the route below is for viewing one user
-	 $router->get('groups/{id}', 'GroupController@show');
+	 //The following route is for viewing one user
+	 $router->get('groups/{group_id}', 'GroupController@show');
 
-	 //the route below is for viewing all users
-	 $router->post('groups/add', 'GroupController@store');
+	 //The following route is for viewing all users
+	 $router->post('groups', 'GroupController@store');
 
-	 //the route below is for updating the information of a user
-	 $router->post('groups/update/{id}', 'GroupController@update');
+	 //The following route is for updating The information of a user
+	 $router->put('groups/update/{group_id}', 'GroupController@update');
 
-	 //the route below is for deleting a group from the database
-	 $router->delete('groups/delete/{id}', 'GroupController@destroy');
+	 //The following route is for deleting a group from The database
+	 $router->delete('groups/delete/{group_id}', 'GroupController@destroy');
 
-	 //the route below is for logged-in user to join a public group
-	 $router->post('groups/joinPublicGroup', 'PublicGroupController@joinPublicGroup');
+	 //The following route is for logged-in user to join a public group
+	 $router->post('groups/{group_id}/join', 'PublicGroupController@joinPublicGroup');
 
-	 //the route below is for logged-in user to leave a public group
-	 $router->post('groups/leavePublicGroup', 'PublicGroupController@leavePublicGroup');
+	 //The following route is for logged-in user to leave a public group
+	 $router->post('groups/{group_id}/leave', 'PublicGroupController@leavePublicGroup');
 
-	 //the route below is for group-owner to add users into his private group
-	 $router->post('groups/addUserToPrivateGroup', 'PrivateGroupController@addUserToPrivateGroup');
+	 //The following route is for group-owner to add users into his private group
+	 $router->post('groups/{group_id}/add', 'PrivateGroupController@addUserToPrivateGroup');
 
-	  //the route below is for group-owner to delete users from his private group
-	 $router->post('groups/removeUserFromPrivateGroup', 'PrivateGroupController@removeUserFromPrivateGroup');
+	 //The following route is for group-owner to delete users from his private group
+	 $router->post('groups/{group_id}/remove', 'PrivateGroupController@removeUserFromPrivateGroup');
 
 });
 
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
-	 //the route below is for creating/regsitering a new user
-	 //$router->post('users/register', 'UserController@store');
+	 //The following route is for sign-up/regsitering a new user
+	 $router->post('users/register', 'UserController@store');
 
-	 //the route below is for login
-	 $router->post('users/login', 'UserController@authenticate');
+	 //The following route is for login
+	 $router->post('users/login', 'UserController@auThenticate');
 });

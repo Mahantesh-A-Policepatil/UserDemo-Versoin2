@@ -3,7 +3,7 @@
   namespace App\Http\Controllers;
    
   use App\Groups;
-  use App\GroupsMembers;
+  use App\GroupUsers;
   use App\Http\Controllers\Controller;
   use Illuminate\Http\Request;
   use Response;
@@ -12,22 +12,21 @@
 
   class PrivateGroupController extends Controller{
 
-  	public function addUserToPrivateGroup(Request $request){
+  	public function addUserToPrivateGroup(Request $request, $group_id){
   	
   		$this->validate($request, [
-            'group_id'=>'required',
-            'group_member_id'=>'required'
+            'user_id'=>'required'
         ]);
 
-        if(Groups::where('id', '=', $request->get('group_id'))
+        if(Groups::where('id', '=', $group_id)
           ->where('is_public_group','=',1)
           ->exists()
         ){
           return response()->json(['error' => 'You are not authorized to add users this group as this is not a private group'], 401);
         }
 
-        if (GroupsMembers::where('group_id', '=', $request->get('group_id'))
-                        ->where('group_member_id', '=',$request->get('group_member_id'))
+        if (GroupUsers::where('group_id', '=', $group_id)
+                        ->where('user_id', '=',$request->get('user_id'))
                         ->exists()
             ){
           // user already exists
@@ -38,9 +37,9 @@
 		          ->where('is_public_group','=',0)
 		          ->exists()
         ){
-            $privateGroup = new GroupsMembers([
-	          'group_id' => $request->get('group_id'),
-	          'group_member_id' => $request->get('group_member_id')
+            $privateGroup = new GroupUsers([
+	          'group_id' => $group_id,
+	          'user_id' => $request->get('user_id')
 	        ]);
 	        $privateGroup->save();
 	        return response()->json($privateGroup);
@@ -50,22 +49,21 @@
         }
   	}
 
-  	public function removeUserFromPrivateGroup(Request $request){
+  	public function removeUserFromPrivateGroup(Request $request, $group_id){
   	//print_r(Auth::user()->id); exit;
   		$this->validate($request, [
-            'group_id'=>'required',
-            'group_member_id'=>'required'
+            'user_id'=>'required'
         ]);
 
-        if(Groups::where('id', '=', $request->get('group_id'))
+        if(Groups::where('id', '=', $group_id)
           ->where('is_public_group','=',1)
           ->exists()
         ){
           return response()->json(['error' => 'You are not authorized to add users this group as this is not a private group'], 401);
         }
 
-        $groupMember  = GroupsMembers::where('group_id', '=', $request->get('group_id'))
-                                    ->where('group_member_id', '=', $request->get('group_member_id'))
+        $groupMember  = GroupUsers::where('group_id', '=', $group_id)
+                                    ->where('user_id', '=', $request->get('user_id'))
                                     ->first();
         if(!$groupMember){
         	return response()->json(['status' => 'User does not exists in this private group.']);

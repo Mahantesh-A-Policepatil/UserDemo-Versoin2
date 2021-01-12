@@ -52,7 +52,6 @@
    
       $this->validate($request, [
           'group_name'=>'required|unique:groups',
-          'group_owner_id'=>'required',
           'is_public_group'=>'required'
       ]);
 
@@ -65,7 +64,7 @@
       }
        $group = new Groups([
           'group_name' => $request->get('group_name'),
-          'group_owner_id' => $request->get('group_owner_id'),
+          'group_owner_id' => Auth::user()->id,
           'is_public_group' => $request->get('is_public_group'),
           'group_desc' => $group_desc
        ]);
@@ -82,16 +81,19 @@
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-    public function update(Request $request, $id){
+    public function update(Request $request, $group_id){
 
-      $group  = Groups::find($id);
+      $group  = Groups::find($group_id);
       if(!$group) {
         return response()->json(['status' => 'Group does not exists.']);
+      }
+      //echo "group_owner_id".$group->group_owner_id."Logged-In User".Auth::user()->id; exit;
+      if($group->group_owner_id !=  Auth::user()->id){
+        return response()->json(['error' => 'You are not authorized to update'], 401);
       }
 
       $this->validate($request, [
           'group_name' => ['required',Rule::unique('groups')->ignore($group->id)],
-          'group_owner_id'=>'required',
           'is_public_group'=>'required'
       ]);
       $group_desc = '';
@@ -102,7 +104,7 @@
       	$group_desc = null;
       }
       $group->group_name = $request->get('group_name');
-      $group->group_owner_id = $request->get('group_owner_id');
+      $group->group_owner_id = Auth::user()->id;
       $group->is_public_group = $request->get('is_public_group');
       $group->group_desc = $group_desc;
     
@@ -119,9 +121,13 @@
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id){
-        $group  = Groups::find($id);
+    public function destroy($group_id){
+        $group  = Groups::find($group_id);
+
         if($group){
+          if($group->group_owner_id !=  Auth::user()->id){
+            return response()->json(['error' => 'You are not authorized to delete'], 401);
+          }
           $group->delete();
           return response()->json(['status' => 'Group Removed successfully.']);
         }else{

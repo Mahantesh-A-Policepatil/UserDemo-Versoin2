@@ -38,9 +38,9 @@
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-    public function show($id){
+    public function show($user_id){
 
-      $user  = User::find($id);
+      $user  = User::find($user_id);
       return response()->json($user);
     }
 
@@ -78,13 +78,19 @@
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-    public function update(Request $request, $id){
+    public function update(Request $request, $user_id){
 
-      $user  = User::find($id);
+      $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.']);
       }
+      
+      if($user_id !=  Auth::user()->id){
+        return response()->json(['error' => 'You are not authorized to update'], 401);
+      }
+      //print_r($request->get('password')); exit;
 
+      
       $this->validate($request, [
           'username'=>'required',
           'email' => ['required',Rule::unique('users')->ignore($user->id)],
@@ -96,7 +102,9 @@
       $user->email = $request->get('email');
       $user->mobile = $request->get('mobile');
       $user->address = $request->get('address');
-      $user->password = Hash::make($request->get('password'));
+      if($request->get('password')){
+        $user->password = Hash::make($request->get('password'));
+      }
      
       $user->update();
 
@@ -110,9 +118,12 @@
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id){
-        $user  = User::find($id);
+    public function destroy($user_id){
+        $user  = User::find($user_id);
         if($user){
+          if($user_id !=  Auth::user()->id){
+            return response()->json(['error' => 'You are not authorized to delete'], 401);
+          }
           $user->delete();
           return response()->json(['status' => 'User Removed successfully.']);
         }else{
