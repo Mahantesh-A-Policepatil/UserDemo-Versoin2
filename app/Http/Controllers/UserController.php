@@ -10,7 +10,7 @@
   use Illuminate\Support\Str;
   use Auth;
   use Illuminate\Validation\Rule;
-   
+    
   class UserController extends Controller{
 
   /**
@@ -21,13 +21,15 @@
     public function index(Request $request){
    
       $userName = $request->get('name');
-        
+      $seconds = 100000;  
       if($userName){
         $user  = User::where('username', 'like', $userName."%")->get();
-        return response()->json($user);
+        app('redis')->set("filtered_users", $user);
+        return response()->json(json_decode(app('redis')->get("filtered_users")));
       }else{
         $user  = User::all();
-        return response()->json($user);
+        app('redis')->set("all_users", $user);
+        return response()->json(json_decode(app('redis')->get("all_users")));
       }
         
     }
