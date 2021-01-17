@@ -43,23 +43,18 @@
           return  $users;
      }else{
 
-      if ($users = Redis::get('users.all')) {
-        $users = Redis::get('users.all')
-        return json_decode($users);
-      }
+      if (app('redis')->exists('users_all')) {
+        $users = app('redis')->get('users_all');
+        return $users;
+      }  
       $user = User::all();
 
       $manager = new Manager();
       $resource = new Collection($user, new UserTransformer());
-      //$manager->parseIncludes('characters');
       $users = $manager->createData($resource)->toArray();
-      //return  $users;
-
-      Redis::set('users.all', json_encode($users));
-      //return $users;
-      return response()->json($users);
-
-        
+      app('redis')->set("users_all", json_encode($users));
+      return $users;
+  
       }
         
     }

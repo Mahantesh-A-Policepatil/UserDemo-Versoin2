@@ -29,7 +29,6 @@ class UserTest extends TestCase
             'email' => $email,
             'password' => $password
         ]);
-        //print_r($response->original['api_key']); exit;
         $this->token = $response->original['api_key'];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('success', $response->original['status']);
@@ -38,14 +37,10 @@ class UserTest extends TestCase
     public function testGetUsers()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); exit;
-        $response = $this->get('http://localhost:8000/api/v1/users?name=',[], ['HTTP_Authorization' => "bearer ".$this->token]);
-        //$response = $this->call("GET","http://localhost:8000/api/v1/users?name=",[], 
-        //['HTTP_Authorization' => "bearer ODhqcFdjU3E3UUlLSW9obmtWbVVxR1JjSWlZR3paUDgxQkJuNWhBZQ=="]);
-        //$this->seeStatusCode(200);
-        print_r($response->original); exit;
-        //$this->assertEquals(200, $response->getStatusCode());
-        //$this->seeStatusCode(200);
+        //print_r($this->token); 
+        $response = $this->get('http://localhost:8000/api/v1/users?name=',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        
+        $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'data' => ['*' =>
                 [
