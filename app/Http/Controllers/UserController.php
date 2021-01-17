@@ -66,8 +66,19 @@
    * @return \Illuminate\Http\Response
    */
     public function show($user_id){
+    
+      if (app('redis')->exists('getUser')) {
+        $users = app('redis')->get('getUser');
+        return $users;
+      }  
       $user  = User::find($user_id);
-      return response()->json($user);
+
+      $manager = new Manager();
+      $resource = new Collection($user, new UserTransformer());
+      $users = $manager->createData($resource)->toArray();
+      app('redis')->set("getUser", json_encode($users));
+      return $users;
+
     }
 
    /**
@@ -108,7 +119,7 @@
    * @return \Illuminate\Http\Response
    */
     public function update(Request $request, $user_id){
-
+    //TODO: only authorized used will be allowed to update - Mahantesh:Remember
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.']);
@@ -135,7 +146,14 @@
      
       $user->update();
 
-      return response()->json($user);
+      return $user;
+
+      //return response()->json($user);
+      // if($user){
+      //   return response()->json(['status' => 'User updated successfully.']);
+      // }else{
+      //   return response()->json(['error' => 'Failed to updated User, please try again later'], 401);
+      // }
       
     }  
 

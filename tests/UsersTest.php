@@ -55,7 +55,7 @@ class UserTest extends TestCase
             ]
         ]);
     }
-     /*
+     
     public function generateCode($limit){
         $code = '';
         for($i = 0; $i < $limit; $i++) { 
@@ -64,13 +64,11 @@ class UserTest extends TestCase
         return $code;
     }
    
-    public function testCreateUser()
+    public function testRegisterUser()
     {
-        //$this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $newPassword =Hash::make(Str::random(8));
+        $newPassword =Str::random(8);
         $userName = Str::random(8);
         $address = Str::random(25);
-        //echo $this->generateCode(10); exit;
         $parameters = [
             'username' => $userName,
             'password' => $newPassword,
@@ -78,18 +76,51 @@ class UserTest extends TestCase
             'mobile' => $this->generateCode(10),
             'address' => $address
         ];
-        $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, []);
-        //$response = $this->post('POST', 'http://localhost:8000/api/v1/users/register', $parameters, ['HTTP_Authorization' => "bearer ".$this->token]);
-        //$this->assertEquals(200, $response->getStatusCode());
+        $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
+ 
         $this->seeStatusCode(200);
         $latestUser = User::latest()->first();
         //print_r($latestUser['username']);
-        //print_r($response);
+        //print_r($response); exit;
         $this->assertEquals($parameters['username'], $latestUser['username']);
-        
+        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+        $this->assertEquals($parameters['email'], $latestUser['email']);
+        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+        $this->assertEquals($parameters['address'], $latestUser['address']);
         
     }
-    */
+
+    public function testUpdateUser()
+    {
+        $newPassword = Str::random(8);
+        $userName = "Mahesh Patil";
+        $address = Str::random(25);
+        $parameters = [
+            'username' => $userName,
+            'password' => $newPassword,
+            'email' => $userName."@gmail.com",
+            'mobile' => $this->generateCode(10),
+            'address' => $address
+        ];
+        $response = $this->put("http://localhost:8000/api/v1/users/update/19", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+ 
+        //$this->seeStatusCode(200);
+        $latestUser = User::find(19);
+
+        echo "Parameters Passed";
+        print_r($parameters);
+        echo "Updated Fields";
+        print_r($latestUser); 
+
+        
+        $this->assertEquals($parameters['username'], $latestUser['username']);
+        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+        $this->assertEquals($parameters['email'], $latestUser['email']);
+        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+        $this->assertEquals($parameters['address'], $latestUser['address']);
+        
+    }
+    
 
     
 }
