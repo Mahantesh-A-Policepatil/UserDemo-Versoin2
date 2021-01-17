@@ -8,6 +8,7 @@
         "php": "^7.3|^8.0",
         "illuminate/redis": "^8.22",
         "laravel/lumen-framework": "^8.0",
+        "league/fractal": "^0.19.2",
         "predis/predis": "^1.1"
     },
     "require-dev": {
@@ -24,7 +25,8 @@
     },
     "autoload-dev": {
         "classmap": [
-            "tests/"
+            "tests/",
+            "transformers"
         ]
     },
     "config": {

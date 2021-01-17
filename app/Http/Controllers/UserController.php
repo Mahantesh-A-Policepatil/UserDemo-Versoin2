@@ -10,8 +10,18 @@
   use Illuminate\Support\Str;
   use Auth;
   use Illuminate\Validation\Rule;
+
+  use League\Fractal\Manager;
+  use League\Fractal\Resource\Collection;
+  
+  use App\Transformers\UserTransformer;
+  use Illuminate\Support\Facades\Redis;
     
   class UserController extends Controller{
+
+    private $fractal;
+
+    
 
   /**
    * Display a listing of the resource.
@@ -22,14 +32,34 @@
    
       $userName = $request->get('name');
       $seconds = 100000;  
+      //$fractal = new Manager();
       if($userName){
-        $user  = User::where('username', 'like', $userName."%")->get();
-        app('redis')->set("filtered_users", $user);
-        return response()->json(json_decode(app('redis')->get("filtered_users")));
-      }else{
-        $user  = User::all();
-        app('redis')->set("all_users", $user);
-        return response()->json(json_decode(app('redis')->get("all_users")));
+          $user  = User::where('username', 'like', $userName."%")->get();
+
+          $manager = new Manager();
+          $resource = new Collection($user, new UserTransformer());
+          //$manager->parseIncludes('characters');
+          $users = $manager->createData($resource)->toArray();
+          return  $users;
+     }else{
+
+      if ($users = Redis::get('users.all')) {
+        $users = Redis::get('users.all')
+        return json_decode($users);
+      }
+      $user = User::all();
+
+      $manager = new Manager();
+      $resource = new Collection($user, new UserTransformer());
+      //$manager->parseIncludes('characters');
+      $users = $manager->createData($resource)->toArray();
+      //return  $users;
+
+      Redis::set('users.all', json_encode($users));
+      //return $users;
+      return response()->json($users);
+
+        
       }
         
     }
@@ -41,7 +71,6 @@
    * @return \Illuminate\Http\Response
    */
     public function show($user_id){
-
       $user  = User::find($user_id);
       return response()->json($user);
     }
@@ -68,8 +97,11 @@
           'password' => Hash::make($request->get('password'))
        ]);
        $user->save();
-     
-      return response()->json($user);
+       if($user){
+        return response()->json(['status' => 'User registration completed successfully.']);
+       }else{
+        return response()->json(['error' => 'Failed to register new user, please try again later'], 401);
+       }
    
     }
    
@@ -90,9 +122,7 @@
       if($user_id !=  Auth::user()->id){
         return response()->json(['error' => 'You are not authorized to update'], 401);
       }
-      //print_r($request->get('password')); exit;
-
-      
+            
       $this->validate($request, [
           'username'=>'required',
           'email' => ['required',Rule::unique('users')->ignore($user->id)],

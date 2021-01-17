@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 
 class UserFactory extends Factory
 {
@@ -21,9 +22,13 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $newPassword = str_random(8);
         return [
-            'name' => $this->faker->name,
+            'username' => $this->faker->name,
+            'password' => Hash::make($newPassword),
             'email' => $this->faker->unique()->safeEmail,
+            'mobile' => $this->faker->phoneNumber,
+            'address' => $this->faker->text
         ];
     }
 }

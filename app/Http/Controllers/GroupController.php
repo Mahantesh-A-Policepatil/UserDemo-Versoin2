@@ -26,8 +26,14 @@
         $groups  = Groups::where('group_name', 'like', $groupName."%")->get();
         return response()->json($groups);
       }else{
-        $groups  = Groups::all();
-        return response()->json($groups);
+        if(app('redis')->exists("all_groups"))
+        {
+          return json_decode(app('redis')->get("all_groups"));
+        }else{
+          $groups  = Groups::all();
+          app('redis')->set("all_groups", $groups);
+          return json_decode(app('redis')->get("all_groups"));
+        }
       }
         
     }
