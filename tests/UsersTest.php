@@ -137,7 +137,7 @@ class UserTest extends TestCase
             'mobile' => $this->generateCode(10),
             'address' => $address
         ];
-        $response = $this->put("http://localhost:8000/api/v1/users/update/8", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/users/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeJsonStructure(
             ['data' =>

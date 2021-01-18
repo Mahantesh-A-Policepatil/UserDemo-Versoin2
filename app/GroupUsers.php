@@ -15,16 +15,10 @@ class GroupUsers extends Model
 	   'created_at', 
 	   'updated_at'
    ]; 
-//    public static $timestamps = true;
-//    public function getDateFormat()
-//    {
-// 		return 'U';
-//    }
+   
+   public $timestamps = true;
 
-   protected $dates = [
-       'created_at', 
-	   'updated_at'
-   ];
+   protected $dateFormat = 'U';
 
    protected $casts = [
 	  /* 'created_at' => 'datetime:Y-m-d H:i:s',

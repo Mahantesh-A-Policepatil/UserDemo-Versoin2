@@ -16,7 +16,8 @@
   use League\Fractal\Resource\Item;
   use App\Transformers\UserTransformer;
   use Illuminate\Support\Facades\Redis;
-    
+
+
   class UserController extends Controller{
 
     private $fractal;
@@ -183,7 +184,7 @@
      * @return \Illuminate\Http\Response
      */
     public function authenticate(Request $request){
-      
+
       $this->validate($request, [
          'email' => 'required|email',
          'password' => 'required'

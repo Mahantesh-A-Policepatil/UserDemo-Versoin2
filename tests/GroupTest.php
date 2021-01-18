@@ -34,6 +34,34 @@ class GroupTest extends TestCase
         $this->assertEquals('success', $response->original['status']);
     }
 
+    public function testCreateGroup()
+    {
+        $this->Login('mahantesh@gmail.com', 'Shakti@123');
+        $parameters = [
+            'group_name' => Str::random(8),
+            'is_public_group' => 1,
+            'group_desc' => Str::random(25),
+        ];
+        $response = $this->post("http://localhost:8000/api/v1/groups", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+ 
+        $this->seeStatusCode(200);
+      
+        $this->seeJsonStructure(
+            ['data' =>
+                [
+                    'id',
+                    'group_name',
+                    'group_desc',
+                    'group_owner_id',
+                    'is_public_group',
+                    'created_at',
+                    'updated_at'
+                ]
+            ]    
+        );
+        
+    }
+
     public function testGetGroups()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
@@ -77,35 +105,7 @@ class GroupTest extends TestCase
             ]    
         );
     }
-         
-    public function testCreateGroup()
-    {
-        $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $parameters = [
-            'group_name' => Str::random(8),
-            'is_public_group' => 1,
-            'group_desc' => Str::random(25),
-        ];
-        $response = $this->post("http://localhost:8000/api/v1/groups", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
-        $this->seeStatusCode(200);
-      
-        $this->seeJsonStructure(
-            ['data' =>
-                [
-                    'id',
-                    'group_name',
-                    'group_desc',
-                    'group_owner_id',
-                    'is_public_group',
-                    'created_at',
-                    'updated_at'
-                ]
-            ]    
-        );
-        
-    }
-
+    
     public function testUpdateGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
@@ -115,7 +115,7 @@ class GroupTest extends TestCase
             'is_public_group' => 1,
             'group_desc' => "Group-10-".Str::random(25),
         ];
-        $response = $this->put("http://localhost:8000/api/v1/groups/update/14", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/groups/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeJsonStructure(
             ['data' =>
@@ -146,9 +146,23 @@ class GroupTest extends TestCase
     }
     */
 
+    public function testJoin1PublicGroup()
+    {
+        $this->Login('1YRA2Yq0@gmail.com', 'Shakti@123');
+        $parameters = [];
+        $response = $this->post("http://localhost:8000/api/v1/groups/1/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+ 
+        $this->seeStatusCode(200);
+      
+        $this->seeJsonStructure([
+            'status',
+            'message'
+        ]);
+    }
+
     public function testJoinPublicGroup()
     {
-        $this->Login('6KbHTDzc@gmail.com', 'Shakti@123');
+        $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
  
@@ -162,7 +176,7 @@ class GroupTest extends TestCase
 
     public function testLeavePublicGroup()
     {
-        $this->Login('6KbHTDzc@gmail.com', 'Shakti@123');
+        $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/leave", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
  
@@ -177,7 +191,7 @@ class GroupTest extends TestCase
     public function testAddUserToPrivateGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $parameters = ['user_id' => 100];
+        $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/add", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
  
         $this->seeStatusCode(200);
@@ -191,7 +205,7 @@ class GroupTest extends TestCase
     public function testRemoveUserFromPrivateGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $parameters = ['user_id' => 100];
+        $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
  
         $this->seeStatusCode(200);
