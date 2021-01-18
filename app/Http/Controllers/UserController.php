@@ -13,7 +13,7 @@
 
   use League\Fractal\Manager;
   use League\Fractal\Resource\Collection;
-  
+  use League\Fractal\Resource\Item;
   use App\Transformers\UserTransformer;
   use Illuminate\Support\Facades\Redis;
     
@@ -31,14 +31,14 @@
     public function index(Request $request){
    
       $userName = $request->get('name');
-      $seconds = 100000;  
-      //$fractal = new Manager();
+      //$seconds = 100000;  
+     
       if($userName){
           $user  = User::where('username', 'like', $userName."%")->get();
 
           $manager = new Manager();
           $resource = new Collection($user, new UserTransformer());
-          //$manager->parseIncludes('characters');
+          
           $users = $manager->createData($resource)->toArray();
           return  $users;
      }else{
@@ -66,19 +66,11 @@
    * @return \Illuminate\Http\Response
    */
     public function show($user_id){
-    
-      if (app('redis')->exists('getUser')) {
-        $users = app('redis')->get('getUser');
-        return $users;
-      }  
       $user  = User::find($user_id);
-
       $manager = new Manager();
-      $resource = new Collection($user, new UserTransformer());
-      $users = $manager->createData($resource)->toArray();
-      app('redis')->set("getUser", json_encode($users));
-      return $users;
-
+      $resource = new Item($user, new UserTransformer());
+      $user = $manager->createData($resource)->toArray();
+      return $user;
     }
 
    /**
@@ -103,12 +95,12 @@
           'password' => Hash::make($request->get('password'))
        ]);
        $user->save();
-       if($user){
-        return response()->json(['status' => 'User registration completed successfully.']);
-       }else{
-        return response()->json(['error' => 'Failed to register new user, please try again later'], 401);
-       }
-   
+
+       $manager = new Manager();
+       $resource = new Item($user, new UserTransformer());
+       $users = $manager->createData($resource)->toArray();
+       return $users;
+      
     }
    
    /**
@@ -119,7 +111,7 @@
    * @return \Illuminate\Http\Response
    */
     public function update(Request $request, $user_id){
-    //TODO: only authorized used will be allowed to update - Mahantesh:Remember
+    
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.']);
@@ -132,8 +124,7 @@
       $this->validate($request, [
           'username'=>'required',
           'email' => ['required',Rule::unique('users')->ignore($user->id)],
-          'mobile' => ['required',Rule::unique('users')->ignore($user->id)],
-          //'password'=>'required'
+          'mobile' => ['required',Rule::unique('users')->ignore($user->id)]
       ]);
 
       $user->username = $request->get('username');
@@ -146,14 +137,11 @@
      
       $user->update();
 
-      return $user;
-
-      //return response()->json($user);
-      // if($user){
-      //   return response()->json(['status' => 'User updated successfully.']);
-      // }else{
-      //   return response()->json(['error' => 'Failed to updated User, please try again later'], 401);
-      // }
+      $manager = new Manager();
+      $resource = new Item($user, new UserTransformer());
+      $users = $manager->createData($resource)->toArray();
+      return $users;
+   
       
     }  
 
@@ -163,17 +151,28 @@
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($user_id){
-        $user  = User::find($user_id);
-        if($user){
-          if($user_id !=  Auth::user()->id){
-            return response()->json(['error' => 'You are not authorized to delete'], 401);
-          }
-          $user->delete();
-          return response()->json(['status' => 'User Removed successfully.']);
-        }else{
-          return response()->json(['status' => 'User does not exists.']);
+     public function destroy($user_id){
+      $user  = User::find($user_id);  
+      if($user){
+        if($user_id !=  Auth::user()->id){
+          return response()->json(['error' => 'You are not authorized to delete'], 401);
         }
+      }
+      //Return error 404 response if product was not found
+      if(!User::find($user_id)) return $this->errorResponse('User not found!', 404);
+
+      //Return 410(done) success response if delete was successful
+      if(User::find($user_id)->delete()){
+          return $this->customResponse('User deleted successfully!', 410);
+      }
+
+      //Return error 400 response if delete was not successful
+      return $this->errorResponse('Failed to delete User!', 400);
+    }
+
+    public function customResponse($message = 'success', $status = 200)
+    {
+        return response(['status' =>  $status, 'message' => $message], $status);
     }
 
     /**
@@ -184,12 +183,15 @@
      * @return \Illuminate\Http\Response
      */
     public function authenticate(Request $request){
-
+      
       $this->validate($request, [
          'email' => 'required|email',
          'password' => 'required'
       ]);
       $user = User::where('email', $request->get('email'))->first();
+      if(!$user){
+        return response()->json(['status' => 404,  'message' => 'User does not exists.']);
+      }
 
       if(Hash::check($request->get('password'), $user->password)){
         $apikey = base64_encode(Str::random(40));
@@ -211,7 +213,7 @@
       $user->save();
       return response()->json(['status' => 'Successfully Logged Out']);
     }
-     
+  
     
   }
 

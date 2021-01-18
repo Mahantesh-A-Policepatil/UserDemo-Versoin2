@@ -11,6 +11,12 @@
   use Auth;
   use Illuminate\Validation\Rule;
 
+  use League\Fractal\Manager;
+  use League\Fractal\Resource\Collection;
+  use League\Fractal\Resource\Item;
+  use App\Transformers\GroupTransformer;
+  use Illuminate\Support\Facades\Redis;
+
   class GroupController extends Controller{
 
    /**
@@ -24,15 +30,21 @@
         
       if($groupName){
         $groups  = Groups::where('group_name', 'like', $groupName."%")->get();
-        return response()->json($groups);
+        $manager = new Manager();
+        $resource = new Collection($groups, new GroupTransformer());
+        $groups = $manager->createData($resource)->toArray();
+        return  $groups;
       }else{
-        if(app('redis')->exists("all_groups"))
-        {
-          return json_decode(app('redis')->get("all_groups"));
-        }else{
-          $groups  = Groups::all();
-          app('redis')->set("all_groups", $groups);
-          return json_decode(app('redis')->get("all_groups"));
+          if (app('redis')->exists('all_groups')) {
+            $groups = app('redis')->get('all_groups');
+            return $groups;
+          } else {
+            $groups  = Groups::all();
+            $manager = new Manager();
+            $resource = new Collection($groups, new GroupTransformer());
+            $groups = $manager->createData($resource)->toArray();
+            app('redis')->set("all_groups", json_encode($groups));
+            return $groups;
         }
       }
         
@@ -44,9 +56,13 @@
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-    public function show($id){
-      $group  = Groups::find($id);
-      return response()->json($group);
+    public function show($group_id){
+      $group  = Groups::find($group_id);
+      //return response()->json($group);
+      $manager = new Manager();
+      $resource = new Item($group, new GroupTransformer());
+      $group = $manager->createData($resource)->toArray();
+      return $group;
     }
 
    /**
@@ -76,7 +92,12 @@
        ]);
        $group->save();
      
-      return response()->json($group);
+      //return response()->json($group);
+
+      $manager = new Manager();
+      $resource = new Item($group, new GroupTransformer());
+      $group = $manager->createData($resource)->toArray();
+      return $group;
    
     }
    
@@ -117,17 +138,17 @@
      
       $group->update();
 
-      return response()->json($group);
+      //return response()->json($group);
+
+      $manager = new Manager();
+      $resource = new Item($group, new GroupTransformer());
+      $group = $manager->createData($resource)->toArray();
+      return $group;
       
     }  
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($group_id){
+    /*
+    public function destroy1($group_id){
         $group  = Groups::find($group_id);
 
         if($group){
@@ -139,6 +160,36 @@
         }else{
           return response()->json(['status' => 'Group does not exists.']);
         }
+    }
+*/
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($group_id){
+      $group  = Groups::find($group_id);
+      if($group){
+        if($group->group_owner_id !=  Auth::user()->id){
+          return response()->json(['error' => 'You are not authorized to delete'], 401);
+        }
+      }
+      //Return error 404 response if product was not found
+      if(!Groups::find($group_id)) return $this->errorResponse('Group not found!', 404);
+
+      //Return 410(done) success response if delete was successful
+      if(Groups::find($group_id)->delete()){
+          return $this->customResponse('Group deleted successfully!', 410);
+      }
+
+      //Return error 400 response if delete was not successful
+      return $this->errorResponse('Failed to delete Group!', 400);
+    }
+
+    public function customResponse($message = 'success', $status = 200)
+    {
+        return response(['status' =>  $status, 'message' => $message], $status);
     }
 
 

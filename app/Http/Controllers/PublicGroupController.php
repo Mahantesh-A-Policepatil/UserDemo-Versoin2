@@ -9,6 +9,10 @@
   use Response;
   use Auth;
   use Illuminate\Validation\Rule;
+  use League\Fractal\Manager;
+  use League\Fractal\Resource\Collection;
+  use League\Fractal\Resource\Item;
+  use App\Transformers\GroupUsersTransformer;
 
   class PublicGroupController extends Controller{
 
@@ -31,7 +35,7 @@
                         ->exists()
             ){
           // user already exists
-          return response()->json(['status' => 'User already exists.']);
+          return response()->json(['status' => 409, 'message' => 'User already exists.'],409);
         }
 
         $publicGroup = new GroupUsers([
@@ -39,7 +43,9 @@
           'user_id' => Auth::user()->id
        ]);
        $publicGroup->save();
-       return response()->json($publicGroup);
+       //return response()->json($publicGroup);
+
+       return response()->json(['status' => 200, 'message' => 'User added to the group successfully.']);
      }
 
     public function leavePublicGroup(Request $request, $group_id){
@@ -59,14 +65,15 @@
       if (GroupUsers::where('group_id', '=', $group_id)
                         ->where('user_id', '=',Auth::user()->id)
                         ->exists()
-         ){
+         )
+      {
         $groupMember  = GroupUsers::where('group_id', '=', $group_id)
                                     ->where('user_id', '=', Auth::user()->id)
                                     ->first();
         $groupMember->delete();
-        return response()->json(['status' => 'User left the group successfully.']);
+        return response()->json(['status' => 200, 'message' => 'User left the group successfully.']);
       }else{
-        return response()->json(['status' => 'User does not exists in this public group.']);
+        return response()->json(['status' => 409, 'message' => 'User does not exists in this public group.']);
       }
 
    }

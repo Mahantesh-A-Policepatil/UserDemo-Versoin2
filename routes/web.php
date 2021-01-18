@@ -25,7 +25,7 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 //The following route is for viewing all users
 	 $router->get('users', 'UserController@index');
 
-	 //The following route is for viewing one user
+	 //The following route is for viewing a user
 	 $router->get('users/{user_id}', 'UserController@show');
 
 	 //The following route is for updating The information of a user
@@ -34,16 +34,16 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 //The following route is for deleting a user from The database
 	 $router->delete('users/delete/{user_id}', 'UserController@destroy');
 	
-	 //The following route is for viewing all users
+	 //The following route is for viewing all groups
 	 $router->get('groups', 'GroupController@index');
 
-	 //The following route is for viewing one user
+	 //The following route is for viewing one group
 	 $router->get('groups/{group_id}', 'GroupController@show');
 
-	 //The following route is for viewing all users
+	 //The following route is for creating a new group
 	 $router->post('groups', 'GroupController@store');
 
-	 //The following route is for updating The information of a user
+	 //The following route is for updating The information of a group
 	 $router->put('groups/update/{group_id}', 'GroupController@update');
 
 	 //The following route is for deleting a group from The database
