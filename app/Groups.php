@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 
 class Groups extends Model
@@ -17,7 +18,13 @@ class Groups extends Model
 	   'created_at', 
 	   'updated_at'
    ];   
+//    public static $timestamps = true;
+//    protected function getDateFormat()
+//    {
+// 		return 'U';
+//    }
 
+	
    protected $dates = [
        'created_at', 
 	   'updated_at'
@@ -30,4 +37,6 @@ class Groups extends Model
 	   'created_at' => 'datetime:Y-m-d g:iA',
 	   'updated_at' => 'datetime:Y-m-d g:iA'
    ];
+
+  
 }

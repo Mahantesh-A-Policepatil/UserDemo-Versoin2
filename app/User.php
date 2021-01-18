@@ -26,6 +26,12 @@ class User extends Model
 		'password',
 		'api_key'
    ];
+//    public static $timestamps = true;
+   
+//    protected function getDateFormat()
+//    {
+// 		return 'U';
+//    }
 
    protected $dates = [
        'created_at', 

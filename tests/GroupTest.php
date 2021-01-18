@@ -201,5 +201,24 @@ class GroupTest extends TestCase
             'message'
         ]);
     }
+
+    public function testGetGroupMembers()
+    {
+        $this->Login('mahantesh@gmail.com', 'Shakti@123');
+        //print_r($this->token); 
+        $response = $this->get('http://localhost:8000/api/v1/groupMembers/?group_name=Mahantesh-Public-Group',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'data' => ['*' =>
+                [
+                    'id',
+                    'username',
+                    'updated_at',
+                    'updated_at'
+                ]
+            ]
+        ]);
+    }
     
 }

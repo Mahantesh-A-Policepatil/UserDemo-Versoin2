@@ -49,6 +49,9 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 //The following route is for deleting a group from The database
 	 $router->delete('groups/delete/{group_id}', 'GroupController@destroy');
 
+	 //The following route is for viewing one group
+	 $router->get('groupMembers', 'GroupController@getGroupMembers');
+
 	 //The following route is for logged-in user to join a public group
 	 $router->post('groups/{group_id}/join', 'PublicGroupController@joinPublicGroup');
 

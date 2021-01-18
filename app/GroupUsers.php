@@ -14,7 +14,12 @@ class GroupUsers extends Model
 	   'user_id',
 	   'created_at', 
 	   'updated_at'
-   ];   
+   ]; 
+//    public static $timestamps = true;
+//    public function getDateFormat()
+//    {
+// 		return 'U';
+//    }
 
    protected $dates = [
        'created_at', 
@@ -28,4 +33,7 @@ class GroupUsers extends Model
 	   'created_at' => 'datetime:Y-m-d g:iA',
 	   'updated_at' => 'datetime:Y-m-d g:iA'
    ];
+
+   
+   
 }

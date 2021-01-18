@@ -3,6 +3,7 @@
   namespace App\Http\Controllers;
    
   use App\Groups;
+  use App\GroupUsers;
   use App\Http\Controllers\Controller;
   use Illuminate\Http\Request;
   use Response;
@@ -15,6 +16,7 @@
   use League\Fractal\Resource\Collection;
   use League\Fractal\Resource\Item;
   use App\Transformers\GroupTransformer;
+  use App\Transformers\GroupUsersTransformer;
   use Illuminate\Support\Facades\Redis;
 
   class GroupController extends Controller{
@@ -192,6 +194,20 @@
         return response(['status' =>  $status, 'message' => $message], $status);
     }
 
-
+    public function getGroupMembers(Request $request){
+      $group_name = $request->get('group_name');
+      // if (app('redis')->exists('get_group_members')) {
+      //   $group_members = app('redis')->get('get_group_members');
+      //   return $group_members;
+      // } else {
+        $group_members['data'] = GroupUsers::select('users.id','users.username', 'group_users.created_at', 'group_users.updated_at')
+                                            ->leftjoin('users','group_users.user_id','=','users.id')
+                                            ->leftjoin('groups','group_users.group_id','=','groups.id')
+                                            ->where('groups.group_name', $group_name)
+                                            ->get();
+        // app('redis')->set("get_group_members", json_encode($group_members));                                    
+        return $group_members;
+    //  }
+   }
 
   }
