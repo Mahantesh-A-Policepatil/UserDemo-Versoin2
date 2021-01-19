@@ -27,7 +27,7 @@
           ->where('is_public_group','=',0)
           ->exists()
         ){
-          return response()->json(['error' => 'You are not authorized to join this group as this is not a public group'], 401);
+          return response()->json(['status' => 401, 'message' => 'You are not authorized to join this group as this is not a public group'], 401);
         }
 
         if (GroupUsers::where('group_id', '=', $group_id)
@@ -45,7 +45,7 @@
        $publicGroup->save();
        //return response()->json($publicGroup);
 
-       return response()->json(['status' => 200, 'message' => 'User added to the group successfully.']);
+       return response()->json(['status' => 200, 'message' => 'User added to the group successfully.'], 200);
      }
 
     public function leavePublicGroup(Request $request, $group_id){
@@ -59,7 +59,7 @@
           ->where('is_public_group','=',0)
           ->exists()
         ){
-          return response()->json(['error' => 'You are not authorized to join this group as this is not a public group'], 401);
+          return response()->json(['status' => 401, 'message' => 'You are not authorized to join this group as this is not a public group'], 401);
         }
 
       if (GroupUsers::where('group_id', '=', $group_id)
@@ -71,9 +71,9 @@
                                     ->where('user_id', '=', Auth::user()->id)
                                     ->first();
         $groupMember->delete();
-        return response()->json(['status' => 200, 'message' => 'User left the group successfully.']);
+        return response()->json(['status' => 200, 'message' => 'User left the group successfully.'], 200);
       }else{
-        return response()->json(['status' => 409, 'message' => 'User does not exists in this public group.']);
+        return response()->json(['status' => 409, 'message' => 'User does not exists in this public group.'], 409);
       }
 
    }

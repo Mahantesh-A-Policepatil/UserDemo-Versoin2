@@ -60,6 +60,9 @@
    */
     public function show($group_id){
       $group  = Groups::find($group_id);
+      if(!$group) {
+        return response()->json(['status' => 'Group does not exists.'], 404);
+      }
       //return response()->json($group);
       $manager = new Manager();
       $resource = new Item($group, new GroupTransformer());
@@ -164,13 +167,36 @@
         }
     }
 */
-    /**
+ /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($group_id){
+      $group  = Groups::find($group_id);
+      if(!$group) {
+        return response()->json(['status' => 404, 'message' => 'Group does not exists.'], 404);
+      }
+      
+      if($group->group_owner_id !=  Auth::user()->id){
+        return response()->json(['status' => 401, 'message' => 'You are not authorized to update this group'], 401);
+      }
+
+      $group->delete();
+      if($group) {
+        return response()->json(['status' => 410, 'message' =>  'Group deleted successfully!'], 410);
+      }else{
+        return response()->json(['status' => 400, 'message' =>  'Failed to delete group!'], 400);
+      }
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy1($group_id){
       $group  = Groups::find($group_id);
       if($group){
         if($group->group_owner_id !=  Auth::user()->id){
@@ -200,6 +226,10 @@
       //   $group_members = app('redis')->get('get_group_members');
       //   return $group_members;
       // } else {
+        if($group_name === '')
+        {
+          return response()->json(['status' => 422, 'message' => 'Please enter group name'], 422);
+        }
         $group_members['data'] = GroupUsers::select('users.id','users.username', 'group_users.created_at', 'group_users.updated_at')
                                             ->leftjoin('users','group_users.user_id','=','users.id')
                                             ->leftjoin('groups','group_users.group_id','=','groups.id')

@@ -75,7 +75,7 @@
         ){
              
 	         $groupMember->delete();
-	         return response()->json(['status' => 200, 'message' => 'User has been deleted from the group successfully.']);
+	         return response()->json(['status' => 200, 'message' => 'User has been deleted from the group successfully.'], 200);
         }
        
   	}

@@ -68,6 +68,9 @@
    */
     public function show($user_id){
       $user  = User::find($user_id);
+      if(!$user) {
+        return response()->json(['status' => 'User does not exists.'], 404);
+      }
       $manager = new Manager();
       $resource = new Item($user, new UserTransformer());
       $user = $manager->createData($resource)->toArray();
@@ -115,7 +118,7 @@
     
       $user  = User::find($user_id);
       if(!$user) {
-        return response()->json(['status' => 'User does not exists.']);
+        return response()->json(['status' => 'User does not exists.'], 404);
       }
       
       if($user_id !=  Auth::user()->id){
@@ -142,8 +145,7 @@
       $resource = new Item($user, new UserTransformer());
       $users = $manager->createData($resource)->toArray();
       return $users;
-   
-      
+         
     }  
 
     /**
@@ -152,30 +154,24 @@
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-     public function destroy($user_id){
-      $user  = User::find($user_id);  
-      if($user){
-        if($user_id !=  Auth::user()->id){
-          return response()->json(['error' => 'You are not authorized to delete'], 401);
-        }
+    public function destroy($user_id){
+      $user  = User::find($user_id);
+      if(!$user) {
+        return response()->json(['status' => 404, 'message' => 'User does not exists.'], 404);
       }
-      //Return error 404 response if product was not found
-      if(!User::find($user_id)) return $this->errorResponse('User not found!', 404);
-
-      //Return 410(done) success response if delete was successful
-      if(User::find($user_id)->delete()){
-          return $this->customResponse('User deleted successfully!', 410);
+      
+      if($user_id !=  Auth::user()->id){
+        return response()->json(['status' => 401, 'message' => 'You are not authorized to update'], 401);
       }
 
-      //Return error 400 response if delete was not successful
-      return $this->errorResponse('Failed to delete User!', 400);
+      $user->delete();
+      if($user) {
+        return response()->json(['status' => 410, 'message' =>  'User deleted successfully!'], 410);
+      }else{
+        return response()->json(['status' => 400, 'message' =>  'Failed to delete User!'], 400);
+      }
     }
-
-    public function customResponse($message = 'success', $status = 200)
-    {
-        return response(['status' =>  $status, 'message' => $message], $status);
-    }
-
+   
     /**
      * Login:Authenticate a user
      *
