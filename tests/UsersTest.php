@@ -29,9 +29,10 @@ class UserTest extends TestCase
             'email' => $email,
             'password' => $password
         ]);
-        $this->token = $response->original['api_key'];
+        //$this->token = $response->original['api_key'];
+        $this->token = $response->original['access_token'];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('success', $response->original['status']);
+        //$this->assertEquals('success', $response->original['status']);
     }
 
     public function testGetUsers()

@@ -9,7 +9,8 @@
         "illuminate/redis": "^8.22",
         "laravel/lumen-framework": "^8.0",
         "league/fractal": "^0.19.2",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

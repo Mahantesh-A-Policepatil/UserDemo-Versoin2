@@ -3,12 +3,21 @@ namespace App;
  
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Auth\Authenticatable as AuthenticableTrait;
+//use Illuminate\Contracts\Auth\Authenticatable;
+//use Illuminate\Auth\Authenticatable as AuthenticableTrait;
+
+use Illuminate\Auth\Authenticatable;
+use Laravel\Lumen\Auth\Authorizable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+
  
-class User extends Model
+class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 { 
-   use AuthenticableTrait;
+   //use AuthenticableTrait;
+   use Authenticatable, Authorizable;
 
    protected $fillable = [
 	   'id', 
@@ -39,6 +48,26 @@ class User extends Model
 	   'updated_at' => 'datetime:Y-m-d g:iA'
    ];
 
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
 	
-	}
+}
 ?>

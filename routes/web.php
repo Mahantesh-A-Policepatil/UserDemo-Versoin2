@@ -17,9 +17,32 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
+// $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
 
-	 //The following route is for logout
+
+
+// });
+
+// Following routes uses custom auth token
+// $router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+// 	 //The following route is for sign-up/regsitering a new user
+// 	 $router->post('users/register', 'UserController@store');
+
+// 	 //The following route is for login
+// 	 $router->post('users/login', 'UserController@auThenticate');
+// });
+
+// Following routes uses JWT Auth Tokens
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+	// Matches "/api/register
+    $router->post('users/register', 'UserController@store');
+
+	 // Matches "/api/login
+	$router->post('users/login', 'AuthController@login');
+
+	// 	 //The following route is for logout
 	 $router->get('users/logout', 'UserController@logout');
 
 	 //The following route is for viewing all users
@@ -64,13 +87,4 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
 	 //The following route is for group-owner to delete users from his private group
 	 $router->post('groups/{group_id}/remove', 'PrivateGroupController@removeUserFromPrivateGroup');
 
-});
-
-$router->group(['prefix' => 'api/v1'], function () use ($router) {
-
-	 //The following route is for sign-up/regsitering a new user
-	 $router->post('users/register', 'UserController@store');
-
-	 //The following route is for login
-	 $router->post('users/login', 'UserController@auThenticate');
 });

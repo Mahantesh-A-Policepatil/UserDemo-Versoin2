@@ -29,9 +29,11 @@ class GroupTest extends TestCase
             'email' => $email,
             'password' => $password
         ]);
-        $this->token = $response->original['api_key'];
+        //print_r($response->original); exit;
+        //$this->token = $response->original['api_key'];
+        $this->token = $response->original['access_token'];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('success', $response->original['status']);
+        //$this->assertEquals('success', $response->original['status']);
     }
 
     public function testCreateGroup()
@@ -146,13 +148,13 @@ class GroupTest extends TestCase
     }
     */
 
-    public function testJoin1PublicGroup()
+    public function testJoinPublicGroupUserAlreadyExist()
     {
         $this->Login('1YRA2Yq0@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
  
-        $this->seeStatusCode(200);
+        $this->seeStatusCode(409);
       
         $this->seeJsonStructure([
             'status',
