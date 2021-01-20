@@ -33,17 +33,22 @@ $router->get('/', function () use ($router) {
 // 	 $router->post('users/login', 'UserController@auThenticate');
 // });
 
-// Following routes uses JWT Auth Tokens
+
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
-	// Matches "/api/register
-    $router->post('users/register', 'UserController@store');
+	 //The following route is for sign-up/regsitering a new user
+	 $router->post('users/register', 'UserController@store');
 
-	 // Matches "/api/login
-	$router->post('users/login', 'AuthController@login');
+	 //The following route is for login
+	 $router->post('users/login', 'AuthController@login');
+});
 
-	// 	 //The following route is for logout
-	 $router->get('users/logout', 'UserController@logout');
+
+// Following routes uses JWT Auth Tokens
+$router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
+
+	 //The following route is for logout
+	 $router->get('users/logout', 'AuthController@logout');
 
 	 //The following route is for viewing all users
 	 $router->get('users', 'UserController@index');
