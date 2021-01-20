@@ -1,7 +1,7 @@
 <?php
- 
+
   namespace App\Http\Controllers;
-   
+
   use App\Groups;
   use App\GroupUsers;
   use App\Http\Controllers\Controller;
@@ -27,9 +27,9 @@
    * @return \Illuminate\Http\Response
    */
   	public function index(Request $request){
-   
+
       $groupName = $request->get('group_name');
-        
+
       if($groupName){
         $groups  = Groups::where('group_name', 'like', $groupName."%")->get();
         $manager = new Manager();
@@ -49,7 +49,7 @@
             return $groups;
         }
       }
-        
+
     }
 
    /**
@@ -76,17 +76,17 @@
    * @return \Illuminate\Http\Response
    */
    public function store(Request $request){
-   
+
       $this->validate($request, [
           'group_name'=>'required|unique:groups',
           'is_public_group'=>'required'
       ]);
 
 	    $group_desc = '';
-      if($request->get('group_desc')){ 
+      if($request->get('group_desc')){
       	 $group_desc = $request->get('group_desc');
   	  }
-      else{  
+      else{
       	$group_desc = null;
       }
        $group = new Groups([
@@ -96,16 +96,16 @@
           'group_desc' => $group_desc
        ]);
        $group->save();
-     
+
       //return response()->json($group);
 
       $manager = new Manager();
       $resource = new Item($group, new GroupTransformer());
       $group = $manager->createData($resource)->toArray();
       return $group;
-   
+
     }
-   
+
    /**
    * Update the specified resource in storage.
    *
@@ -129,18 +129,18 @@
           'is_public_group'=>'required'
       ]);
       $group_desc = '';
-      if($request->get('group_desc')){ 
+      if($request->get('group_desc')){
       	 $group_desc = $request->get('group_desc');
   	  }
-      else{  
+      else{
       	$group_desc = null;
       }
       $group->group_name = $request->get('group_name');
       $group->group_owner_id = Auth::user()->id;
       $group->is_public_group = $request->get('is_public_group');
       $group->group_desc = $group_desc;
-    
-     
+
+
       $group->update();
 
       //return response()->json($group);
@@ -149,25 +149,10 @@
       $resource = new Item($group, new GroupTransformer());
       $group = $manager->createData($resource)->toArray();
       return $group;
-      
-    }  
 
-    /*
-    public function destroy1($group_id){
-        $group  = Groups::find($group_id);
-
-        if($group){
-          if($group->group_owner_id !=  Auth::user()->id){
-            return response()->json(['error' => 'You are not authorized to delete'], 401);
-          }
-          $group->delete();
-          return response()->json(['status' => 'Group Removed successfully.']);
-        }else{
-          return response()->json(['status' => 'Group does not exists.']);
-        }
     }
-*/
- /**
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -178,7 +163,7 @@
       if(!$group) {
         return response()->json(['status' => 404, 'message' => 'Group does not exists.'], 404);
       }
-      
+
       if($group->group_owner_id !=  Auth::user()->id){
         return response()->json(['status' => 401, 'message' => 'You are not authorized to update this group'], 401);
       }
@@ -190,36 +175,12 @@
         return response()->json(['status' => 400, 'message' =>  'Failed to delete group!'], 400);
       }
     }
+
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy1($group_id){
-      $group  = Groups::find($group_id);
-      if($group){
-        if($group->group_owner_id !=  Auth::user()->id){
-          return response()->json(['error' => 'You are not authorized to delete'], 401);
-        }
-      }
-      //Return error 404 response if product was not found
-      if(!Groups::find($group_id)) return $this->errorResponse('Group not found!', 404);
-
-      //Return 410(done) success response if delete was successful
-      if(Groups::find($group_id)->delete()){
-          return $this->customResponse('Group deleted successfully!', 410);
-      }
-
-      //Return error 400 response if delete was not successful
-      return $this->errorResponse('Failed to delete Group!', 400);
-    }
-
-    public function customResponse($message = 'success', $status = 200)
-    {
-        return response(['status' =>  $status, 'message' => $message], $status);
-    }
-
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
     public function getGroupMembers(Request $request){
       $group_name = $request->get('group_name');
       // if (app('redis')->exists('get_group_members')) {
@@ -235,7 +196,7 @@
                                             ->leftjoin('groups','group_users.group_id','=','groups.id')
                                             ->where('groups.group_name', $group_name)
                                             ->get();
-        // app('redis')->set("get_group_members", json_encode($group_members));                                    
+        // app('redis')->set("get_group_members", json_encode($group_members));
         return $group_members;
     //  }
    }
