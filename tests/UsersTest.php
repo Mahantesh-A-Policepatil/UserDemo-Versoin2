@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use App\User;
-
+use Illuminate\Support\Str;
 
 class UserTest extends TestCase
 {
@@ -15,19 +13,17 @@ class UserTest extends TestCase
      */
     public $token;
 
-    public function Login($email=false, $password=false)
+    public function Login($email = false, $password = false)
     {
-        if(!$email)
-        {
+        if (!$email) {
             $email = 'mahantesh@gmail.com';
         }
-        if(!$password)
-        {
+        if (!$password) {
             $password = 'Shakti@123';
         }
         $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
         //$this->token = $response->original['api_key'];
         $this->token = $response->original['access_token'];
@@ -47,12 +43,12 @@ class UserTest extends TestCase
 
         $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
         $this->assertEquals(401, $response->getStatusCode());
     }
 
-     /**
+    /**
      * A basic test example for Login : When user does not enter Email,
      * It should return Status Code : 422,
      * @return void
@@ -64,7 +60,7 @@ class UserTest extends TestCase
 
         $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -81,7 +77,7 @@ class UserTest extends TestCase
 
         $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -95,7 +91,7 @@ class UserTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         //print_r($this->token);
-        $response = $this->get('http://localhost:8000/api/v1/users?name=',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users?name=', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
@@ -107,9 +103,9 @@ class UserTest extends TestCase
                     'mobile',
                     'address',
                     'created_at',
-                    'updated_at'
-                ]
-            ]
+                    'updated_at',
+                ],
+            ],
         ]);
     }
 
@@ -122,7 +118,7 @@ class UserTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         //print_r($this->token);
-        $response = $this->get('http://localhost:8000/api/v1/users?name=maha',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users?name=maha', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
@@ -134,9 +130,9 @@ class UserTest extends TestCase
                     'mobile',
                     'address',
                     'created_at',
-                    'updated_at'
-                ]
-            ]
+                    'updated_at',
+                ],
+            ],
         ]);
     }
 
@@ -149,7 +145,7 @@ class UserTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         //print_r($this->token);
-        $response = $this->get('http://localhost:8000/api/v1/users/1',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users/1', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
@@ -161,8 +157,8 @@ class UserTest extends TestCase
                     'mobile',
                     'address',
                     'created_at',
-                    'updated_at'
-                ]
+                    'updated_at',
+                ],
             ]
         );
     }
@@ -177,14 +173,15 @@ class UserTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         //print_r($this->token);
-        $response = $this->get('http://localhost:8000/api/v1/users/1000',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users/1000', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(404);
 
     }
 
-    public function generateCode($limit){
+    public function generateCode($limit)
+    {
         $code = '';
-        for($i = 0; $i < $limit; $i++) {
+        for ($i = 0; $i < $limit; $i++) {
             $code .= mt_rand(0, 9);
         }
         return $code;
@@ -197,14 +194,14 @@ class UserTest extends TestCase
     public function testRegisterUser()
     {
         $newPassword = "India@123";
-        $userName = "India".Str::random(8);
-        $address = "India".Str::random(25);
+        $userName = "India" . Str::random(8);
+        $address = "India" . Str::random(25);
         $parameters = [
             'username' => $userName,
             'password' => $newPassword,
-            'email' => $userName."@gmail.com",
+            'email' => $userName . "@gmail.com",
             'mobile' => $this->generateCode(10),
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
 
@@ -215,7 +212,7 @@ class UserTest extends TestCase
         $this->assertEquals($parameters['email'], $latestUser['email']);
         $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
         $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
+         */
         $this->seeJsonStructure(
             ['data' =>
                 [
@@ -225,8 +222,8 @@ class UserTest extends TestCase
                     'mobile',
                     'address',
                     'created_at',
-                    'updated_at'
-                ]
+                    'updated_at',
+                ],
             ]
         );
 
@@ -247,20 +244,19 @@ class UserTest extends TestCase
             'password' => $newPassword,
             'email' => "",
             'mobile' => "",
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
 
         $this->seeStatusCode(422);
         //print_r($response);
         /*
-        $latestUser = User::latest()->first();
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
-
+    $latestUser = User::latest()->first();
+    $this->assertEquals($parameters['username'], $latestUser['username']);
+    $this->assertEquals($parameters['email'], $latestUser['email']);
+    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+    $this->assertEquals($parameters['address'], $latestUser['address']);
+     */
 
     }
     /**
@@ -273,13 +269,13 @@ class UserTest extends TestCase
         $this->Login('rajesh@gmail.com', 'Shakti@123');
         $newPassword = "Shakti@123";
         $userName = "Mahesh Patil";
-        $address = "India".Str::random(25);
+        $address = "India" . Str::random(25);
         $parameters = [
             'username' => $userName,
             'password' => $newPassword,
             'email' => "rajesh@gmail.com",
             'mobile' => $this->generateCode(10),
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->put("http://localhost:8000/api/v1/users/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(200);
@@ -292,19 +288,19 @@ class UserTest extends TestCase
                     'mobile',
                     'address',
                     'created_at',
-                    'updated_at'
-                ]
+                    'updated_at',
+                ],
             ]
         );
         /*
-        $latestUser = User::find(8);
+    $latestUser = User::find(8);
 
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
+    $this->assertEquals($parameters['username'], $latestUser['username']);
+    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+    $this->assertEquals($parameters['email'], $latestUser['email']);
+    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+    $this->assertEquals($parameters['address'], $latestUser['address']);
+     */
     }
 
     /**
@@ -323,20 +319,20 @@ class UserTest extends TestCase
             'password' => $newPassword,
             'email' => "",
             'mobile' => "",
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->put("http://localhost:8000/api/v1/users/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(422);
 
         /*
-        $latestUser = User::find(8);
+    $latestUser = User::find(8);
 
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
+    $this->assertEquals($parameters['username'], $latestUser['username']);
+    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+    $this->assertEquals($parameters['email'], $latestUser['email']);
+    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+    $this->assertEquals($parameters['address'], $latestUser['address']);
+     */
     }
 
     /**
@@ -355,20 +351,20 @@ class UserTest extends TestCase
             'password' => $newPassword,
             'email' => "",
             'mobile' => "",
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->put("http://localhost:8000/api/v1/users/update/2", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(401);
 
         /*
-        $latestUser = User::find(8);
+    $latestUser = User::find(8);
 
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
+    $this->assertEquals($parameters['username'], $latestUser['username']);
+    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+    $this->assertEquals($parameters['email'], $latestUser['email']);
+    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+    $this->assertEquals($parameters['address'], $latestUser['address']);
+     */
     }
 
     /**
@@ -388,20 +384,20 @@ class UserTest extends TestCase
             'password' => $newPassword,
             'email' => "",
             'mobile' => "",
-            'address' => $address
+            'address' => $address,
         ];
         $response = $this->put("http://localhost:8000/api/v1/users/update/1000", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(404);
 
         /*
-        $latestUser = User::find(8);
+    $latestUser = User::find(8);
 
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-        */
+    $this->assertEquals($parameters['username'], $latestUser['username']);
+    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
+    $this->assertEquals($parameters['email'], $latestUser['email']);
+    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
+    $this->assertEquals($parameters['address'], $latestUser['address']);
+     */
     }
 
     /**
@@ -411,9 +407,9 @@ class UserTest extends TestCase
 
     public function testDeleteUserInavlidUserId()
     {
-        $this->Login('monty@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/users/delete/1", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        $this->seeStatusCode(401);
+    $this->Login('monty@gmail.com', 'Shakti@123');
+    $response = $this->delete("http://localhost:8000/api/v1/users/delete/1", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+    $this->seeStatusCode(401);
     }
      */
     /**
@@ -423,14 +419,14 @@ class UserTest extends TestCase
 
     public function testDeleteUser()
     {
-        $this->Login('monty@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/users/delete/82", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+    $this->Login('monty@gmail.com', 'Shakti@123');
+    $response = $this->delete("http://localhost:8000/api/v1/users/delete/82", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
-        $this->seeStatusCode(410);
-        $this->seeJsonStructure([
-            'status',
-            'message'
-        ]);
+    $this->seeStatusCode(410);
+    $this->seeJsonStructure([
+    'status',
+    'message'
+    ]);
     }
      */
 
@@ -442,7 +438,7 @@ class UserTest extends TestCase
     public function testLogout()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $response = $this->get('http://localhost:8000/api/v1/users/logout',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users/logout', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(200);
     }
 
@@ -453,9 +449,8 @@ class UserTest extends TestCase
      */
     public function testLogoutAgain()
     {
-        $response = $this->get('http://localhost:8000/api/v1/users/logout',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->get('http://localhost:8000/api/v1/users/logout', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(401);
     }
-
 
 }

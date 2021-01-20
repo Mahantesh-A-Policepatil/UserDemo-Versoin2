@@ -1,7 +1,7 @@
 <?php
- 
+
   namespace App\Http\Controllers;
-   
+
   use App\User;
   use App\Http\Controllers\Controller;
   use Illuminate\Http\Request;
@@ -22,7 +22,7 @@
 
     private $fractal;
 
-    
+
 
   /**
    * Display a listing of the resource.
@@ -30,16 +30,16 @@
    * @return \Illuminate\Http\Response
    */
     public function index(Request $request){
-   
+
       $userName = $request->get('name');
-      //$seconds = 100000;  
-     
+      //$seconds = 100000;
+
       if($userName){
           $user  = User::where('username', 'like', $userName."%")->get();
 
           $manager = new Manager();
           $resource = new Collection($user, new UserTransformer());
-          
+
           $users = $manager->createData($resource)->toArray();
           return  $users;
      }else{
@@ -47,7 +47,7 @@
       if (app('redis')->exists('users_all')) {
         $users = app('redis')->get('users_all');
         return $users;
-      }  
+      }
       $user = User::all();
 
       $manager = new Manager();
@@ -55,9 +55,9 @@
       $users = $manager->createData($resource)->toArray();
       app('redis')->set("users_all", json_encode($users));
       return $users;
-  
+
       }
-        
+
     }
 
   /**
@@ -83,7 +83,7 @@
    * @return \Illuminate\Http\Response
    */
     public function store(Request $request){
-   
+
       $this->validate($request, [
           'username'=>'required',
           'email'=>'required|email|unique:users',
@@ -104,9 +104,9 @@
        $resource = new Item($user, new UserTransformer());
        $users = $manager->createData($resource)->toArray();
        return $users;
-      
+
     }
-   
+
    /**
    * Update the specified resource in storage.
    *
@@ -115,16 +115,16 @@
    * @return \Illuminate\Http\Response
    */
     public function update(Request $request, $user_id){
-    
+
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.'], 404);
       }
-      
+
       if($user_id !=  Auth::user()->id){
         return response()->json(['error' => 'You are not authorized to update'], 401);
       }
-            
+
       $this->validate($request, [
           'username'=>'required',
           'email' => ['required',Rule::unique('users')->ignore($user->id)],
@@ -138,15 +138,15 @@
       if($request->get('password')){
         $user->password = Hash::make($request->get('password'));
       }
-     
+
       $user->update();
 
       $manager = new Manager();
       $resource = new Item($user, new UserTransformer());
       $users = $manager->createData($resource)->toArray();
       return $users;
-         
-    }  
+
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -159,7 +159,7 @@
       if(!$user) {
         return response()->json(['status' => 404, 'message' => 'User does not exists.'], 404);
       }
-      
+
       if($user_id !=  Auth::user()->id){
         return response()->json(['status' => 401, 'message' => 'You are not authorized to update'], 401);
       }
@@ -171,7 +171,7 @@
         return response()->json(['status' => 400, 'message' =>  'Failed to delete User!'], 400);
       }
     }
-   
+
     /**
      * Login:Authenticate a user
      *
@@ -210,8 +210,8 @@
       $user->save();
       return response()->json(['status' => 'Successfully Logged Out']);
     }
-  
-    
+
+
   }
 
 ?>

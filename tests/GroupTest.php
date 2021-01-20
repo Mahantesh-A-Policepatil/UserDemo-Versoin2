@@ -1,33 +1,29 @@
 <?php
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use App\Groups;
-
+use Illuminate\Support\Str;
 
 class GroupTest extends TestCase
 {
-    
+
     /**
      * A basic test example.
      *
      * @return void
      */
     public $token;
-  
-    public function Login($email=false, $password=false)
+
+    public function Login($email = false, $password = false)
     {
-        if(!$email)
-        {
+        if (!$email) {
             $email = 'mahantesh@gmail.com';
         }
-        if(!$password)
-        {
+        if (!$password) {
             $password = 'Shakti@123';
         }
         $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
         //print_r($response->original); exit;
         //$this->token = $response->original['api_key'];
@@ -45,14 +41,14 @@ class GroupTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = [
-            'group_name' => "India".Str::random(8),
+            'group_name' => "India" . Str::random(8),
             'is_public_group' => 1,
             'group_desc' => Str::random(25),
         ];
         $response = $this->post("http://localhost:8000/api/v1/groups", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(200);
-      
+
         $this->seeJsonStructure(
             ['data' =>
                 [
@@ -62,9 +58,9 @@ class GroupTest extends TestCase
                     'group_owner_id',
                     'is_public_group',
                     'created_at',
-                    'updated_at'
-                ]
-            ]    
+                    'updated_at',
+                ],
+            ]
         );
     }
 
@@ -82,7 +78,7 @@ class GroupTest extends TestCase
             'group_desc' => "",
         ];
         $response = $this->post("http://localhost:8000/api/v1/groups", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(422);
     }
     /**
@@ -93,9 +89,9 @@ class GroupTest extends TestCase
     public function testGetGroups()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groups?group_name=',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groups?group_name=', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'data' => ['*' =>
@@ -106,9 +102,9 @@ class GroupTest extends TestCase
                     'group_owner_id',
                     'is_public_group',
                     'created_at',
-                    'updated_at'
-                ]
-            ]
+                    'updated_at',
+                ],
+            ],
         ]);
     }
 
@@ -120,9 +116,9 @@ class GroupTest extends TestCase
     public function testGetGroupsWithFilter()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groups?group_name=Group-10',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groups?group_name=Group-10', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'data' => ['*' =>
@@ -133,9 +129,9 @@ class GroupTest extends TestCase
                     'group_owner_id',
                     'is_public_group',
                     'created_at',
-                    'updated_at'
-                ]
-            ]
+                    'updated_at',
+                ],
+            ],
         ]);
     }
 
@@ -147,9 +143,9 @@ class GroupTest extends TestCase
     public function testGetGroupById()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groups/1',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groups/1', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
             ['data' =>
@@ -160,9 +156,9 @@ class GroupTest extends TestCase
                     'group_owner_id',
                     'is_public_group',
                     'created_at',
-                    'updated_at'
-                ]
-            ]    
+                    'updated_at',
+                ],
+            ]
         );
     }
 
@@ -174,11 +170,11 @@ class GroupTest extends TestCase
     public function testGetGroupByInvalidUserId()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groups/233',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groups/233', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(404);
-       
+
     }
     /**
      * A example for updating an existing group
@@ -188,11 +184,11 @@ class GroupTest extends TestCase
     public function testUpdateGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-       
+
         $parameters = [
             'group_name' => "Group-10",
             'is_public_group' => 1,
-            'group_desc' => "Group-10-".Str::random(25),
+            'group_desc' => "Group-10-" . Str::random(25),
         ];
         $response = $this->put("http://localhost:8000/api/v1/groups/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(200);
@@ -205,14 +201,14 @@ class GroupTest extends TestCase
                     'group_owner_id',
                     'is_public_group',
                     'created_at',
-                    'updated_at'
-                ]
-            ]    
+                    'updated_at',
+                ],
+            ]
         );
-       
+
     }
 
-     /**
+    /**
      * A example for updating an existing group, when mandatory fields are missing
      * It should return Status Code : 422
      * @return void
@@ -220,7 +216,7 @@ class GroupTest extends TestCase
     public function testUpdateGroupValidationTest()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-       
+
         $parameters = [
             'group_name' => "",
             'is_public_group' => "",
@@ -240,15 +236,15 @@ class GroupTest extends TestCase
         $this->Login('1YRA2Yq0@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(409);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
-     /**
+    /**
      * A example for user to join a public group
      * It should return Status Code : 200
      * @return void
@@ -258,16 +254,16 @@ class GroupTest extends TestCase
         $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(200);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
-     /**
+    /**
      * A example for user to join a private group
      * It should return Status Code : 401
      * @return void
@@ -277,12 +273,12 @@ class GroupTest extends TestCase
         $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/join", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(401);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -296,12 +292,12 @@ class GroupTest extends TestCase
         $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/leave", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(200);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -315,12 +311,12 @@ class GroupTest extends TestCase
         $this->Login('mmaOuPJJ@gmail.com', 'Shakti@123');
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/leave", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(409);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -334,16 +330,16 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/add", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(401);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
-     /**
+    /**
      * A example where owner of the group can add a user to his group
      * It should return Status Code : 200
      * @return void
@@ -353,16 +349,16 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/add", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(200);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
-     /**
+    /**
      * A example where owner of the group can add the user again to his group
      * It should return Status Code : 409
      * @return void
@@ -372,12 +368,12 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/add", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(409);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -391,12 +387,12 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(401);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -410,15 +406,15 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(200);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
-     
+
     /**
      * A example where owner of the group can remove the same user again from his group
      * It should return Status Code : 404
@@ -429,12 +425,12 @@ class GroupTest extends TestCase
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = ['user_id' => 5];
         $response = $this->post("http://localhost:8000/api/v1/groups/3/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
- 
+
         $this->seeStatusCode(404);
-      
+
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -446,9 +442,9 @@ class GroupTest extends TestCase
     public function testGetGroupMembers()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groupMembers/?group_name=Mahantesh-Public-Group',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groupMembers/?group_name=Mahantesh-Public-Group', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(200);
         $this->seeJsonStructure([
             'data' => ['*' =>
@@ -456,13 +452,13 @@ class GroupTest extends TestCase
                     'id',
                     'username',
                     'updated_at',
-                    'updated_at'
-                ]
-            ]
+                    'updated_at',
+                ],
+            ],
         ]);
     }
 
-     /**
+    /**
      * A example of getting all group members for a given group_name, testing validation error message,
      * It should return Status Code : 422
      * @return void
@@ -470,13 +466,13 @@ class GroupTest extends TestCase
     public function testGetGroupMembersWithoutGroupNameParameter()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        //print_r($this->token); 
-        $response = $this->get('http://localhost:8000/api/v1/groupMembers/?group_name=',['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
-        
+        //print_r($this->token);
+        $response = $this->get('http://localhost:8000/api/v1/groupMembers/?group_name=', ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
         $this->seeStatusCode(422);
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -484,19 +480,19 @@ class GroupTest extends TestCase
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 410,
      * CAUTION : Please provide existing group_id as an input in query string parameter
-     
+
     public function testDeleteGroup()
     {
-        $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/groups/delete/18", [], ['HTTP_Authorization' => "bearer $this->token"]);
+    $this->Login('mahantesh@gmail.com', 'Shakti@123');
+    $response = $this->delete("http://localhost:8000/api/v1/groups/delete/18", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
-        $this->seeStatusCode(410);
-        $this->seeJsonStructure([
-            'status',
-            'message'
-        ]);
+    $this->seeStatusCode(410);
+    $this->seeJsonStructure([
+    'status',
+    'message'
+    ]);
     }
-    */
+     */
     /**
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 401,
@@ -510,7 +506,7 @@ class GroupTest extends TestCase
         $this->seeStatusCode(401);
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
 
@@ -527,9 +523,8 @@ class GroupTest extends TestCase
         $this->seeStatusCode(404);
         $this->seeJsonStructure([
             'status',
-            'message'
+            'message',
         ]);
     }
-    
-    
+
 }
