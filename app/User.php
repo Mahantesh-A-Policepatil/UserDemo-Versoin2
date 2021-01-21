@@ -64,5 +64,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return [];
     }
+    public function groups()
+    {
+        return $this->belongsToMany('App\Group');
+    }
 
 }

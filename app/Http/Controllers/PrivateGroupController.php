@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Groups;
-use App\GroupUsers;
+use App\Group;
+use App\GroupUser;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -24,14 +24,14 @@ class PrivateGroupController extends Controller
             'user_id' => 'required',
         ]);
 
-        if (Groups::where('id', '=', $group_id)
+        if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 1)
             ->exists()
         ) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to add users this group as this is not a private group'], 401);
         }
 
-        if (GroupUsers::where('group_id', '=', $group_id)
+        if (GroupUser::where('group_id', '=', $group_id)
             ->where('user_id', '=', $request->get('user_id'))
             ->exists()
         ) {
@@ -39,11 +39,11 @@ class PrivateGroupController extends Controller
             return response()->json(['status' => 409, 'message' => 'User already exists.'], 409);
         }
 
-        if (Groups::where('group_owner_id', '=', Auth::user()->id)
+        if (Group::where('group_owner_id', '=', Auth::user()->id)
             ->where('is_public_group', '=', 0)
             ->exists()
         ) {
-            $privateGroup = new GroupUsers([
+            $privateGroup = new GroupUser([
                 'group_id' => $group_id,
                 'user_id' => $request->get('user_id'),
             ]);
@@ -68,20 +68,20 @@ class PrivateGroupController extends Controller
             'user_id' => 'required',
         ]);
 
-        if (Groups::where('id', '=', $group_id)
+        if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 1)
             ->exists()
         ) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to add users this group as this is not a private group'], 401);
         }
 
-        $groupMember = GroupUsers::where('group_id', '=', $group_id)
+        $groupMember = GroupUser::where('group_id', '=', $group_id)
             ->where('user_id', '=', $request->get('user_id'))
             ->first();
         if (!$groupMember) {
             return response()->json(['status' => 404, 'message' => 'User does not exists in this private group.'], 404);
         }
-        if (Groups::where('group_owner_id', '=', Auth::user()->id)
+        if (Group::where('group_owner_id', '=', Auth::user()->id)
             ->where('is_public_group', '=', 0)
             ->exists()
         ) {

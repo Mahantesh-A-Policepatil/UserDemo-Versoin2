@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Groups;
-use App\GroupUsers;
+use App\Group;
+use App\GroupUser;
 use App\Http\Controllers\Controller;
 use App\Transformers\GroupTransformer;
 use Auth;
@@ -28,7 +28,7 @@ class GroupController extends Controller
         $groupName = $request->get('group_name');
 
         if ($groupName) {
-            $groups = Groups::where('group_name', 'like', $groupName . "%")->get();
+            $groups = Group::where('group_name', 'like', $groupName . "%")->get();
             $manager = new Manager();
             $resource = new Collection($groups, new GroupTransformer());
             $groups = $manager->createData($resource)->toArray();
@@ -38,7 +38,7 @@ class GroupController extends Controller
                 $groups = app('redis')->get('all_groups');
                 return $groups;
             } else {
-                $groups = Groups::all();
+                $groups = Group::all();
                 $manager = new Manager();
                 $resource = new Collection($groups, new GroupTransformer());
                 $groups = $manager->createData($resource)->toArray();
@@ -57,7 +57,7 @@ class GroupController extends Controller
      */
     public function show($group_id)
     {
-        $group = Groups::find($group_id);
+        $group = Group::find($group_id);
         if (!$group) {
             return response()->json(['status' => 'Group does not exists.'], 404);
         }
@@ -87,7 +87,7 @@ class GroupController extends Controller
         } else {
             $group_desc = null;
         }
-        $group = new Groups([
+        $group = new Group([
             'group_name' => $request->get('group_name'),
             'group_owner_id' => Auth::user()->id,
             'is_public_group' => $request->get('is_public_group'),
@@ -114,7 +114,7 @@ class GroupController extends Controller
     public function update(Request $request, $group_id)
     {
 
-        $group = Groups::find($group_id);
+        $group = Group::find($group_id);
         if (!$group) {
             return response()->json(['status' => 'Group does not exists.']);
         }
@@ -157,7 +157,7 @@ class GroupController extends Controller
      */
     public function destroy($group_id)
     {
-        $group = Groups::find($group_id);
+        $group = Group::find($group_id);
         if (!$group) {
             return response()->json(['status' => 404, 'message' => 'Group does not exists.'], 404);
         }
@@ -189,14 +189,35 @@ class GroupController extends Controller
             if ($group_name === '') {
                 return response()->json(['status' => 422, 'message' => 'Please enter group name'], 422);
             }
-            $group_members['data'] = GroupUsers::select('users.id', 'users.username', 'group_users.created_at', 'group_users.updated_at')
-                ->leftjoin('users', 'group_users.user_id', '=', 'users.id')
-                ->leftjoin('groups', 'group_users.group_id', '=', 'groups.id')
+            $group_members['data'] = GroupUser::select('users.id', 'users.username', 'group_user.created_at', 'group_user.updated_at')
+                ->leftjoin('users', 'group_user.user_id', '=', 'users.id')
+                ->leftjoin('groups', 'group_user.group_id', '=', 'groups.id')
                 ->where('groups.group_name', $group_name)
                 ->get();
             app('redis')->set("$group_name", json_encode($group_members));
             return $group_members;
         }
     }
+
+     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getGroupUsers(Request $request)
+    {
+        $group_name = $request->get('group_name');
+        $result = Group::  where('group_name', $group_name)
+                           //where('group_owner_id', $this->user->id)
+                           ->with(['users'])
+                           ->get();
+
+        return response()->json([
+                   'success' => true,
+                   'status' => 200,
+                   'data' => $result
+               ]);
+    }
+
 
 }

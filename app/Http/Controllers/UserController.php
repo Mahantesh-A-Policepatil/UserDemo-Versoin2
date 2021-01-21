@@ -78,8 +78,8 @@
     }
 
    /**
-   * Show the form for creating a new resource.
-   *
+   * Show the form for creating a new resource,
+   * Registering a new user,
    * @return \Illuminate\Http\Response
    */
     public function store(Request $request){

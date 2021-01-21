@@ -1,12 +1,12 @@
 <?php
 namespace App\Transformers;
 
-use App\Groups;
+use App\Group;
 use League\Fractal\TransformerAbstract;
 
 class GroupTransformer extends TransformerAbstract
 {
-    public function transform(Groups $group)
+    public function transform(Group $group)
     {
         return [
             'id' => $group->id,
@@ -16,7 +16,7 @@ class GroupTransformer extends TransformerAbstract
             'is_public_group' => $group->is_public_group,
             'created_at' => $group->created_at->format('Y-m-d g:iA'),
             'updated_at' => $group->updated_at->format('Y-m-d g:iA')
-            
+
         ];
     }
 }

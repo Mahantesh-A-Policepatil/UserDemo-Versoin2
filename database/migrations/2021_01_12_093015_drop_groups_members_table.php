@@ -15,12 +15,10 @@ class DropGroupsMembersTable extends Migration
     {
         //
         Schema::dropIfExists('groups_members');
-        Schema::create('group_users', function (Blueprint $table) {
+        Schema::create('group_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('group_id');
             $table->unsignedBigInteger('user_id');
-            $table->foreign('group_id')->references('id')->on('groups');
-            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -33,6 +31,6 @@ class DropGroupsMembersTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('group_users');
+        Schema::dropIfExists('group_user');
     }
 }

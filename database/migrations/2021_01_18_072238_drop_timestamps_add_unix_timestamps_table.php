@@ -44,14 +44,14 @@ class DropTimestampsAddUnixTimestampsTable extends Migration
             });
         }
 
-        if (Schema::hasColumn('group_users', 'created_at')) {
-            Schema::table('group_users', function (Blueprint $table) {
+        if (Schema::hasColumn('group_user', 'created_at')) {
+            Schema::table('group_user', function (Blueprint $table) {
                 $table->dropColumn('created_at');
             });
         }
 
-        if (Schema::hasColumn('group_users', 'updated_at')) {
-            Schema::table('group_users', function (Blueprint $table) {
+        if (Schema::hasColumn('group_user', 'updated_at')) {
+            Schema::table('group_user', function (Blueprint $table) {
                 $table->dropColumn('updated_at');
             });
         }
@@ -67,7 +67,7 @@ class DropTimestampsAddUnixTimestampsTable extends Migration
             $table->integer('updated_at');
         });
 
-        Schema::table('group_users', function ($table) {
+        Schema::table('group_user', function ($table) {
             $table->integer('created_at');
             $table->integer('updated_at');
         });

@@ -1,12 +1,12 @@
 <?php
 namespace App\Transformers;
 
-use App\GroupUsers;
+use App\GroupUser;
 use League\Fractal\TransformerAbstract;
 
 class GroupUsersTransformer extends TransformerAbstract
 {
-    public function transform(GroupUsers $groupUsers)
+    public function transform(GroupUser $groupUsers)
     {
         return [
             'id' => $groupUsers->id,

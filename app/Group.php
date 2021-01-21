@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Groups extends Model
+class Group extends Model
 {
     protected $fillable = [
         'id',
@@ -27,5 +27,10 @@ class Groups extends Model
         'created_at' => 'datetime:Y-m-d g:iA',
         'updated_at' => 'datetime:Y-m-d g:iA',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany('App\User');
+    }
 
 }

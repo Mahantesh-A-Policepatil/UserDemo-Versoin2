@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Groups;
-use App\GroupUsers;
+use App\Group;
+use App\GroupUser;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -20,14 +20,14 @@ class PublicGroupController extends Controller
     public function joinPublicGroup(Request $request, $group_id)
     {
 
-        if (Groups::where('id', '=', $group_id)
+        if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
             ->exists()
         ) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to join this group as this is not a public group'], 401);
         }
 
-        if (GroupUsers::where('group_id', '=', $group_id)
+        if (GroupUser::where('group_id', '=', $group_id)
             ->where('user_id', '=', Auth::user()->id)
             ->exists()
         ) {
@@ -35,7 +35,7 @@ class PublicGroupController extends Controller
             return response()->json(['status' => 409, 'message' => 'User already exists.'], 409);
         }
 
-        $publicGroup = new GroupUsers([
+        $publicGroup = new GroupUser([
             'group_id' => $group_id,
             'user_id' => Auth::user()->id,
         ]);
@@ -54,18 +54,18 @@ class PublicGroupController extends Controller
     public function leavePublicGroup(Request $request, $group_id)
     {
 
-        if (Groups::where('id', '=', $group_id)
+        if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
             ->exists()
         ) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to join this group as this is not a public group'], 401);
         }
 
-        if (GroupUsers::where('group_id', '=', $group_id)
+        if (GroupUser::where('group_id', '=', $group_id)
             ->where('user_id', '=', Auth::user()->id)
             ->exists()
         ) {
-            $groupMember = GroupUsers::where('group_id', '=', $group_id)
+            $groupMember = GroupUser::where('group_id', '=', $group_id)
                 ->where('user_id', '=', Auth::user()->id)
                 ->first();
             $groupMember->delete();

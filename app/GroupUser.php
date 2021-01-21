@@ -4,8 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class GroupUsers extends Model
+class GroupUser extends Model
 {
+    //group_users
+    protected $table = 'group_user';
     protected $fillable = [
         'id',
         'group_id',
