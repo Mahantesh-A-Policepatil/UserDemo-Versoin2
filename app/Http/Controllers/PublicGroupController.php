@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
 use Response;
+use Carbon\Carbon;
 
 class PublicGroupController extends Controller
 {
@@ -35,11 +36,13 @@ class PublicGroupController extends Controller
             return response()->json(['status' => 409, 'message' => 'User already exists.'], 409);
         }
 
-        $publicGroup = new GroupUser([
-            'group_id' => $group_id,
-            'user_id' => Auth::user()->id,
-        ]);
-        $publicGroup->save();
+        // $publicGroup = new GroupUser([
+        //     'group_id' => $group_id,
+        //     'user_id' => Auth::user()->id,
+        // ]);
+        //$publicGroup->save();
+        $publicGroup = Group::find($group_id);
+        $publicGroup->users()->attach(Auth::user()->id, ['created_at' => Carbon::now()->timestamp, 'updated_at' => Carbon::now()->timestamp]);
         //return response()->json($publicGroup);
 
         return response()->json(['status' => 200, 'message' => 'User added to the group successfully.'], 200);
@@ -65,10 +68,13 @@ class PublicGroupController extends Controller
             ->where('user_id', '=', Auth::user()->id)
             ->exists()
         ) {
-            $groupMember = GroupUser::where('group_id', '=', $group_id)
-                ->where('user_id', '=', Auth::user()->id)
-                ->first();
-            $groupMember->delete();
+            // $groupMember = GroupUser::where('group_id', '=', $group_id)
+            //     ->where('user_id', '=', Auth::user()->id)
+            //     ->first();
+            // $groupMember->delete();
+            $publicGroup = Group::find($group_id);
+            $publicGroup->users()->detach(Auth::user()->id);
+
             return response()->json(['status' => 200, 'message' => 'User left the group successfully.'], 200);
         } else {
             return response()->json(['status' => 409, 'message' => 'User does not exists in this public group.'], 409);

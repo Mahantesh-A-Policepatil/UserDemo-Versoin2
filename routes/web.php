@@ -63,7 +63,7 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     $router->get('groupMembers', 'GroupController@getGroupMembers');
 
     //The following route is for viewing one group
-    $router->get('groupUsers', 'GroupController@getGroupUsers');
+    //$router->get('groupUsers', 'GroupController@getGroupUsers');
 
     //The following route is for logged-in user to join a public group
     $router->post('groups/{group_id}/join', 'PublicGroupController@joinPublicGroup');

@@ -66,7 +66,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
     public function groups()
     {
-        return $this->belongsToMany('App\Group');
+        return $this->belongsToMany('App\Group')->withTimestamps();
     }
 
 }
