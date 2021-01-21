@@ -161,7 +161,7 @@
       }
 
       if($user_id !=  Auth::user()->id){
-        return response()->json(['status' => 401, 'message' => 'You are not authorized to update'], 401);
+        return response()->json(['status' => 401, 'message' => 'You are not authorized to delete'], 401);
       }
 
       $user->delete();
