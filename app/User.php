@@ -33,17 +33,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password',
         'api_key',
     ];
+
     public $timestamps = true;
-
     protected $dateFormat = 'U';
-
-    protected $casts = [
-        /* 'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s'*/
-
-        'created_at' => 'datetime:Y-m-d g:iA',
-        'updated_at' => 'datetime:Y-m-d g:iA',
-    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

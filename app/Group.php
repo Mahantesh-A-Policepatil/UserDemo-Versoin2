@@ -20,14 +20,6 @@ class Group extends Model
 
     protected $dateFormat = 'U';
 
-    protected $casts = [
-        /* 'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s'*/
-
-        'created_at' => 'datetime:Y-m-d g:iA',
-        'updated_at' => 'datetime:Y-m-d g:iA',
-    ];
-
     public function users()
     {
         return $this->belongsToMany('App\User')->withTimestamps();

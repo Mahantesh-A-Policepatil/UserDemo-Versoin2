@@ -268,7 +268,7 @@ class UserTest extends TestCase
     {
         $this->Login('rajesh@gmail.com', 'Shakti@123');
         $newPassword = "Shakti@123";
-        $userName = "Mahesh Patil";
+        $userName = "Mahesh1 Patil1";
         $address = "India" . Str::random(25);
         $parameters = [
             'username' => $userName,

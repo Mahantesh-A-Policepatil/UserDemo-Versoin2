@@ -14,9 +14,8 @@ class UserTransformer extends TransformerAbstract
             'email' => $user->email,
             'mobile' => $user->mobile,
             'address' => $user->address,
-            'created_at' => $user->created_at->format('Y-m-d g:iA'),
-            'updated_at' => $user->updated_at->format('Y-m-d g:iA')
-            
+            'created_at' => $user->created_at->getTimestamp(),
+            'updated_at' => $user->updated_at->getTimestamp()
         ];
     }
 }
