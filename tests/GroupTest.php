@@ -41,7 +41,7 @@ class GroupTest extends TestCase
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
         $parameters = [
-            'group_name' => "India" . Str::random(8),
+            'group_name' => "India-" . "Mahantesh-" . Str::random(8),
             'is_public_group' => 1,
             'group_desc' => Str::random(25),
         ];
@@ -480,17 +480,17 @@ class GroupTest extends TestCase
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 410,
      * CAUTION : Please provide existing group_id as an input in query string parameter
-
+    
     public function testDeleteGroup()
     {
-    $this->Login('mahantesh@gmail.com', 'Shakti@123');
-    $response = $this->delete("http://localhost:8000/api/v1/groups/18", [], ['HTTP_Authorization' => "bearer $this->token"]);
+        $this->Login('mahantesh@gmail.com', 'Shakti@123');
+        $response = $this->delete("http://localhost:8000/api/v1/groups/102", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
-    $this->seeStatusCode(410);
-    $this->seeJsonStructure([
-    'status',
-    'message'
-    ]);
+        $this->seeStatusCode(410);
+        $this->seeJsonStructure([
+            'status',
+            'message',
+        ]);
     }
      */
     /**

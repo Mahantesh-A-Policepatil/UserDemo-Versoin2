@@ -7,6 +7,7 @@ use App\GroupUser;
 use App\Http\Controllers\Controller;
 use App\Transformers\GroupTransformer;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use League\Fractal\Manager;
@@ -95,6 +96,8 @@ class GroupController extends Controller
         ]);
         $group->save();
 
+        $group->users()->attach(Auth::user()->id, ['created_at' => Carbon::now()->timestamp, 'updated_at' => Carbon::now()->timestamp]);
+
         //return response()->json($group);
 
         $manager = new Manager();
@@ -167,6 +170,7 @@ class GroupController extends Controller
         }
 
         $group->delete();
+
         if ($group) {
             return response()->json(['status' => 410, 'message' => 'Group deleted successfully!'], 410);
         } else {
@@ -199,7 +203,7 @@ class GroupController extends Controller
         }
     }
 
-     /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -207,17 +211,16 @@ class GroupController extends Controller
     public function getGroupUsers(Request $request)
     {
         $group_name = $request->get('group_name');
-        $result = Group::  where('group_name', $group_name)
-                           //where('group_owner_id', $this->user->id)
-                           ->with(['users'])
-                           ->get();
+        $result = Group::where('group_name', $group_name)
+        //where('group_owner_id', $this->user->id)
+            ->with(['users'])
+            ->get();
 
         return response()->json([
-                   'success' => true,
-                   'status' => 200,
-                   'data' => $result
-               ]);
+            'success' => true,
+            'status' => 200,
+            'data' => $result,
+        ]);
     }
-
 
 }
