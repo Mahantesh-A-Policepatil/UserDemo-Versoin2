@@ -39,10 +39,10 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     $router->get('users/{user_id}', 'UserController@show');
 
     //The following route is for updating The information of a user
-    $router->put('users/update/{user_id}', 'UserController@update');
+    $router->put('users/{user_id}', 'UserController@update');
 
     //The following route is for deleting a user from The database
-    $router->delete('users/delete/{user_id}', 'UserController@destroy');
+    $router->delete('users/{user_id}', 'UserController@destroy');
 
     //The following route is for viewing all groups
     $router->get('groups', 'GroupController@index');
@@ -54,10 +54,10 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     $router->post('groups', 'GroupController@store');
 
     //The following route is for updating The information of a group
-    $router->put('groups/update/{group_id}', 'GroupController@update');
+    $router->put('groups/{group_id}', 'GroupController@update');
 
     //The following route is for deleting a group from The database
-    $router->delete('groups/delete/{group_id}', 'GroupController@destroy');
+    $router->delete('groups/{group_id}', 'GroupController@destroy');
 
     //The following route is for viewing one group
     $router->get('groupMembers', 'GroupController@getGroupMembers');
@@ -74,7 +74,7 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     //The following route is for group-owner to add users into his private group
     $router->post('groups/{group_id}/add', 'PrivateGroupController@addMemberToPrivateGroup');
 
-    //The following route is for group-owner to delete users from his private group
+    //The following route is for group-owner to remove users from his private group
     $router->post('groups/{group_id}/remove', 'PrivateGroupController@removeMemberFromPrivateGroup');
 
 });

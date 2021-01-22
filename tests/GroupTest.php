@@ -190,7 +190,7 @@ class GroupTest extends TestCase
             'is_public_group' => 1,
             'group_desc' => "Group-10-" . Str::random(25),
         ];
-        $response = $this->put("http://localhost:8000/api/v1/groups/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/groups/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
             ['data' =>
@@ -222,7 +222,7 @@ class GroupTest extends TestCase
             'is_public_group' => "",
             'group_desc' => "",
         ];
-        $response = $this->put("http://localhost:8000/api/v1/groups/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/groups/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(422);
     }
 
@@ -484,7 +484,7 @@ class GroupTest extends TestCase
     public function testDeleteGroup()
     {
     $this->Login('mahantesh@gmail.com', 'Shakti@123');
-    $response = $this->delete("http://localhost:8000/api/v1/groups/delete/18", [], ['HTTP_Authorization' => "bearer $this->token"]);
+    $response = $this->delete("http://localhost:8000/api/v1/groups/18", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
     $this->seeStatusCode(410);
     $this->seeJsonStructure([
@@ -501,7 +501,7 @@ class GroupTest extends TestCase
     public function testDeleteGroupByUnauthorizedOwner()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/groups/delete/20", [], ['HTTP_Authorization' => "bearer $this->token"]);
+        $response = $this->delete("http://localhost:8000/api/v1/groups/20", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
         $this->seeStatusCode(401);
         $this->seeJsonStructure([
@@ -518,7 +518,7 @@ class GroupTest extends TestCase
     public function testDeleteGroupThatDoesNotExists()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/groups/delete/206", [], ['HTTP_Authorization' => "bearer $this->token"]);
+        $response = $this->delete("http://localhost:8000/api/v1/groups/206", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
         $this->seeStatusCode(404);
         $this->seeJsonStructure([

@@ -277,7 +277,7 @@ class UserTest extends TestCase
             'mobile' => $this->generateCode(10),
             'address' => $address,
         ];
-        $response = $this->put("http://localhost:8000/api/v1/users/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/users/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(200);
         $this->seeJsonStructure(
             ['data' =>
@@ -321,7 +321,7 @@ class UserTest extends TestCase
             'mobile' => "",
             'address' => $address,
         ];
-        $response = $this->put("http://localhost:8000/api/v1/users/update/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/users/1", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(422);
 
         /*
@@ -353,7 +353,7 @@ class UserTest extends TestCase
             'mobile' => "",
             'address' => $address,
         ];
-        $response = $this->put("http://localhost:8000/api/v1/users/update/2", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/users/2", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(401);
 
         /*
@@ -386,7 +386,7 @@ class UserTest extends TestCase
             'mobile' => "",
             'address' => $address,
         ];
-        $response = $this->put("http://localhost:8000/api/v1/users/update/1000", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/users/1000", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(404);
 
         /*
@@ -408,7 +408,7 @@ class UserTest extends TestCase
     public function testDeleteUserInavlidUserId()
     {
     $this->Login('monty@gmail.com', 'Shakti@123');
-    $response = $this->delete("http://localhost:8000/api/v1/users/delete/1", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+    $response = $this->delete("http://localhost:8000/api/v1/users/1", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
     $this->seeStatusCode(401);
     }
      */
@@ -420,7 +420,7 @@ class UserTest extends TestCase
     public function testDeleteUser()
     {
     $this->Login('monty@gmail.com', 'Shakti@123');
-    $response = $this->delete("http://localhost:8000/api/v1/users/delete/82", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+    $response = $this->delete("http://localhost:8000/api/v1/users/82", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
     $this->seeStatusCode(410);
     $this->seeJsonStructure([
