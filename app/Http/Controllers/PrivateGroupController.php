@@ -73,7 +73,7 @@ class PrivateGroupController extends Controller
         } else {
             //echo "Control in else"; exit;
             $privateGroup->users()->detach($request->get('user_id'));
-            return response()->json(['status' => 200, 'message' => 'User added to the group successfully.'], 200);
+            return response()->json(['status' => 200, 'message' => 'User deleted from the group successfully.'], 200);
         }
 
     }
