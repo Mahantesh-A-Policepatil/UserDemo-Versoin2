@@ -328,7 +328,7 @@ class GroupTest extends TestCase
     public function testAddUserToPublicGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $parameters = ['user_id' => 5];
+        $parameters = ['user_id' => 6];
         $response = $this->post("http://localhost:8000/api/v1/groups/1/add", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
