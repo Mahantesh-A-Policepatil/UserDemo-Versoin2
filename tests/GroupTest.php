@@ -479,12 +479,12 @@ class GroupTest extends TestCase
     /**
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 410,
-     * CAUTION : Please provide existing group_id as an input in query string parameter
-    
+     * CAUTION : Please provide existing group_id as an input in query string parameter i.e 97 needs to be changed
+    */
     public function testDeleteGroup()
     {
         $this->Login('mahantesh@gmail.com', 'Shakti@123');
-        $response = $this->delete("http://localhost:8000/api/v1/groups/102", [], ['HTTP_Authorization' => "bearer $this->token"]);
+        $response = $this->delete("http://localhost:8000/api/v1/groups/97", [], ['HTTP_Authorization' => "bearer $this->token"]);
 
         $this->seeStatusCode(410);
         $this->seeJsonStructure([
@@ -492,7 +492,7 @@ class GroupTest extends TestCase
             'message',
         ]);
     }
-     */
+
     /**
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 401,

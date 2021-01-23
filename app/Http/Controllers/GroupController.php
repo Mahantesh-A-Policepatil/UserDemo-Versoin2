@@ -168,7 +168,10 @@ class GroupController extends Controller
         if ($group->group_owner_id != Auth::user()->id) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to update this group'], 401);
         }
-
+        $group_users = collect($group->users())->pluck('id')->toArray();
+        if (!empty($group_users)) {
+            $group->users()->detach();
+        }
         $group->delete();
 
         if ($group) {
