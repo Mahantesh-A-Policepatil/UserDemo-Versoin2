@@ -26,6 +26,11 @@ class GroupController extends Controller
     public function index(Request $request)
     {
 
+        /*
+        * Check if group_name is there in the query string
+        * If group_name is present then we need to filter the group list by group_name
+        * Else return all the groups in the response
+        */
         $groupName = $request->get('group_name');
 
         if ($groupName) {
@@ -76,7 +81,7 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-
+        // validate the data
         $this->validate($request, [
             'group_name' => 'required|unique:groups',
             'is_public_group' => 'required',
@@ -88,15 +93,16 @@ class GroupController extends Controller
         } else {
             $group_desc = null;
         }
+        // Create a new group
         $group = new Group([
             'group_name' => $request->get('group_name'),
-            'group_owner_id' => Auth::user()->id,
+            'group_owner_id' => auth()->user()->id,
             'is_public_group' => $request->get('is_public_group'),
             'group_desc' => $group_desc,
         ]);
         $group->save();
-
-        $group->users()->attach(Auth::user()->id, ['created_at' => Carbon::now()->timestamp, 'updated_at' => Carbon::now()->timestamp]);
+        // Group owner should be automatically added when the group is created.
+        $group->users()->attach(auth()->user()->id, ['created_at' => Carbon::now()->timestamp, 'updated_at' => Carbon::now()->timestamp]);
 
         //return response()->json($group);
 
@@ -116,16 +122,16 @@ class GroupController extends Controller
      */
     public function update(Request $request, $group_id)
     {
-
+        // Check if the group exists.
         $group = Group::find($group_id);
         if (!$group) {
             return response()->json(['status' => 'Group does not exists.']);
         }
-        //echo "group_owner_id".$group->group_owner_id."Logged-In User".Auth::user()->id; exit;
-        if ($group->group_owner_id != Auth::user()->id) {
+        // Only Group owner can update the group, unauthorized user should not be authorized for update operation
+        if ($group->group_owner_id != auth()->user()->id) {
             return response()->json(['error' => 'You are not authorized to update'], 401);
         }
-
+        // validate the data
         $this->validate($request, [
             'group_name' => ['required', Rule::unique('groups')->ignore($group->id)],
             'is_public_group' => 'required',
@@ -136,20 +142,18 @@ class GroupController extends Controller
         } else {
             $group_desc = null;
         }
+        //Update group information.
         $group->group_name = $request->get('group_name');
-        $group->group_owner_id = Auth::user()->id;
+        $group->group_owner_id = auth()->user()->id;
         $group->is_public_group = $request->get('is_public_group');
         $group->group_desc = $group_desc;
 
         $group->update();
 
-        //return response()->json($group);
-
         $manager = new Manager();
         $resource = new Item($group, new GroupTransformer());
         $group = $manager->createData($resource)->toArray();
         return $group;
-
     }
 
     /**
@@ -160,18 +164,22 @@ class GroupController extends Controller
      */
     public function destroy($group_id)
     {
+        //echo auth()->user()->id; exit;
+        // Check if the group exists.
         $group = Group::find($group_id);
         if (!$group) {
             return response()->json(['status' => 404, 'message' => 'Group does not exists.'], 404);
         }
-
-        if ($group->group_owner_id != Auth::user()->id) {
-            return response()->json(['status' => 401, 'message' => 'You are not authorized to update this group'], 401);
+        // Only Group owner can delete the group, unauthorized user should not be authorized for delete operation
+        if ($group->group_owner_id != auth()->user()->id) {
+            return response()->json(['status' => 401, 'message' => 'You are not authorized to delete this group'], 401);
         }
         $group_users = collect($group->users())->pluck('id')->toArray();
         if (!empty($group_users)) {
+            // Delete all group members attached to this group.
             $group->users()->detach();
         }
+        // Delete the group.
         $group->delete();
 
         if ($group) {
@@ -188,6 +196,11 @@ class GroupController extends Controller
      */
     public function getGroupMembers(Request $request)
     {
+        /*
+        * Check if group_name is there in the query string
+        * If group_name is present then we need to filter the group_members list by group_name
+        * Else return all the group_members in the response
+        */
         $group_name = $request->get('group_name');
         if (app('redis')->exists("$group_name")) {
             $group_members = app('redis')->get("$group_name");
@@ -213,6 +226,11 @@ class GroupController extends Controller
      */
     public function getGroupUsers(Request $request)
     {
+        /*
+        * Check if group_name is there in the query string
+        * If group_name is present then we need to filter the group_members list by group_name
+        * Else return all the group_members in the response
+        */
         $group_name = $request->get('group_name');
         $result = Group::where('group_name', $group_name)
         //where('group_owner_id', $this->user->id)

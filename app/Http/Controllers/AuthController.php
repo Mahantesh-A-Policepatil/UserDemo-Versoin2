@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+
 class AuthController extends Controller
 {
     /**
@@ -27,7 +28,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-          //validate incoming request
+        //validate incoming request
         $this->validate($request, [
             'email' => 'required|string',
             'password' => 'required|string',

@@ -32,7 +32,6 @@
     public function index(Request $request){
 
       $userName = $request->get('name');
-      //$seconds = 100000;
 
       if($userName){
           $user  = User::where('username', 'like', $userName."%")->get();
