@@ -19,14 +19,6 @@ class GroupTest extends TestCase
     public $privateGroup;
     public $newUser;
 
-    public function generateCode($limit)
-    {
-        $code = '';
-        for ($i = 0; $i < $limit; $i++) {
-            $code .= mt_rand(0, 9);
-        }
-        return $code;
-    }
 
     /**
      * Helper function
@@ -67,6 +59,7 @@ class GroupTest extends TestCase
      */
     public function createUser()
     {
+        $userObj = new UsersTest();
         $newPassword = "Shakti@123";
         $userName = "India" . Str::random(8);
         $address = "India" . Str::random(25);
@@ -74,7 +67,7 @@ class GroupTest extends TestCase
             'username' => $userName,
             'password' => $newPassword,
             'email' => $userName."@gmail.com",
-            'mobile' => $this->generateCode(10),
+            'mobile' => $userObj->generateCode(10),
             'address' => $address,
         ];
         $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
@@ -83,6 +76,7 @@ class GroupTest extends TestCase
 
     public function setUp(): void
     {
+        $userObj = new UsersTest();
         parent::setup();
         $user = User::where('email', 'mahantesh@gmail.com')->first();
         $this->token = JWTAuth::fromUser($user);
@@ -131,7 +125,6 @@ class GroupTest extends TestCase
      */
     public function testcreatePublicGroupValidationTest()
     {
-        //$this->testLogin('mahantesh@gmail.com', 'Shakti@123');
         $parameters = [
             'group_name' => "",
             'is_public_group' => 1,
@@ -315,24 +308,49 @@ class GroupTest extends TestCase
         ]);
     }
 
+    /**
+     * Helper function
+     * Creates a new user
+     * @return void
+     */
+    public function createUserReturnToken()
+    {
+        $userObj = new UsersTest();
+        $password = "Shakti@123";
+        $userName = "India" . Str::random(8);
+        $email = $userName . "@gmail.com";
+        $address = "India" . Str::random(25);
+        $parameters = [
+            'username' => $userName,
+            'password' => $password,
+            'email' => $email,
+            'mobile' => $userObj->generateCode(10),
+            'address' => $address,
+        ];
+        $regResponse = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
+        //return $response;
+
+        $response = $this->call('POST', '/http://localhost:8000/api/v1/users/login', [
+            'email' => $email,
+            'password' => $password,
+        ]);
+        $this->seeStatusCode(200);
+        $this->token = $response->original['access_token'];
+        return $this->token;
+
+    }
+
     public function testJoinPublicGroup()
     {
 
         $response = $this->publicGroup;
         $groupId = $response['data']['id'];
 
-        $response = $this->createUser();
-        $userEmail = $response['data']['email'];
-
-        $user = User::where('email', $userEmail)->first();
-
-        $jwtToken = JWTAuth::fromUser($user);
+        $jwtToken = $this->createUserReturnToken();
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/".$groupId."/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
-        if($response['status'] != 409){
-            $this->seeStatusCode(200);
-        }
+        $this->seeStatusCode(200);
 
         $this->seeJsonStructure([
             'status',
@@ -347,20 +365,16 @@ class GroupTest extends TestCase
      */
     public function testJoinPrivateGroup()
     {
-        $response = $this->publicGroup;
+        $response = $this->privateGroup;
         $groupId = $response['data']['id'];
 
-        $response = $this->createUser();
-        $userEmail = $response['data']['email'];
-
-        $user = User::where('email', $userEmail)->first();
-        $jwtToken = JWTAuth::fromUser($user);
+        $jwtToken = $this->createUserReturnToken();
 
         $parameters = [];
         $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
-        if($response['status'] != 409){
-            $this->seeStatusCode(401);
-        }
+
+        $this->seeStatusCode(401);
+
         $this->seeJsonStructure([
             'status',
             'message',
@@ -531,7 +545,7 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => 5];
+        $parameters = ['user_id' => $addedUser];
         $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
@@ -568,6 +582,7 @@ class GroupTest extends TestCase
             'status',
             'message',
         ]);
+        return $addedUser;
     }
 
     /**
@@ -577,20 +592,15 @@ class GroupTest extends TestCase
      */
     public function testRemoveUserFromPrivateGroupAgain()
     {
-        $addedUser = $this->testAddUserToPrivateGroup();
+        $addedUser = $this->testRemoveUserFromPrivateGroup();
         $response = $this->privateGroup;
         $groupId = $response['data']['id'];
 
-        $response = $this->createUser();
-        $userEmail = $response['data']['email'];
-
-        $user = User::where('email', $userEmail)->first();
-        $jwtToken = JWTAuth::fromUser($user);
         $parameters = ['user_id' => $addedUser];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
-        if($response['status'] != 200){
-            $this->seeStatusCode(404);
-        }
+        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+
+        $this->seeStatusCode(404);
+
         $this->seeJsonStructure([
             'status',
             'message',
@@ -669,7 +679,6 @@ class GroupTest extends TestCase
      */
     public function testDeleteGroupByUnauthorizedOwner()
     {
-        //$this->testLogin('mahantesh@gmail.com', 'Shakti@123');
         $response = $this->privateGroup;
         $groupId = $response['data']['id'];
 
@@ -697,7 +706,6 @@ class GroupTest extends TestCase
      */
     public function testDeleteGroupThatDoesNotExists()
     {
-        //$this->testLogin('mahantesh@gmail.com', 'Shakti@123');
         $response = $this->delete("http://localhost:8000/api/v1/groups/990000000", [], ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(404);

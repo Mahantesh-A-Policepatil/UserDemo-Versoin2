@@ -52,7 +52,7 @@
         return $users;
       }
       $user = User::all();
-
+      // Return reponse
       $manager = new Manager();
       $resource = new Collection($user, new UserTransformer());
       $users = $manager->createData($resource)->toArray();
@@ -70,11 +70,12 @@
    * @return \Illuminate\Http\Response
    */
     public function show($user_id){
-
+      // Check if the user exists.
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.'], 404);
       }
+      // Return reponse
       $manager = new Manager();
       $resource = new Item($user, new UserTransformer());
       $user = $manager->createData($resource)->toArray();
@@ -106,7 +107,7 @@
           'password' => Hash::make($request->get('password'))
        ]);
        $user->save();
-
+       // Return reponse
        $manager = new Manager();
        $resource = new Item($user, new UserTransformer());
        $users = $manager->createData($resource)->toArray();
@@ -137,7 +138,7 @@
           'email' => ['required',Rule::unique('users')->ignore($user->id)],
           'mobile' => ['required',Rule::unique('users')->ignore($user->id)]
       ]);
-
+      // Return reponse
       $user->username = $request->get('username');
       $user->email = $request->get('email');
       $user->mobile = $request->get('mobile');
@@ -172,6 +173,7 @@
       }
 
       $user->delete();
+      // Return reponse
       if($user) {
         return response()->json(['status' => 410, 'message' =>  'User deleted successfully!'], 410);
       }else{
@@ -215,6 +217,7 @@
       $user = Auth::user();
       $user->api_key = null;
       $user->save();
+      // Return reponse
       return response()->json(['status' => 'Successfully Logged Out']);
     }
 

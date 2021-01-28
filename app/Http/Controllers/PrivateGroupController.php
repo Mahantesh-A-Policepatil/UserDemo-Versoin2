@@ -57,11 +57,11 @@ class PrivateGroupController extends Controller
         ]);
 
         if (Group::where('id', '=', $group_id)->where('is_public_group', '=', 1)->exists()) {
-            return response()->json(['status' => 401, 'message' => 'You are not authorized to add users this group as this is not a private group'], 401);
+            return response()->json(['status' => 401, 'message' => 'You are not authorized to remove users this group as this is not a private group'], 401);
         }
 
         if (Group::where('id', '=', $group_id)->where('group_owner_id', '!=', auth()->user()->id)->exists()) {
-            return response()->json(['status' => 401, 'message' => 'You are not this group owner, So you can not add users to this group'], 401);
+            return response()->json(['status' => 401, 'message' => 'You are not this group owner, So you can not remove users to this group'], 401);
         }
 
         $privateGroup = Group::find($group_id);

@@ -20,7 +20,7 @@ class PublicGroupController extends Controller
      */
     public function joinPublicGroup(Request $request, $group_id)
     {
- //echo "User_id ".auth()->user()->id." Group_id ".$group_id; exit;
+        // Unauthorized user should not be authorized for update operation
         if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
             ->exists()
