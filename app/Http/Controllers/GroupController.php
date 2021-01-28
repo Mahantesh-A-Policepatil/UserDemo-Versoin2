@@ -27,10 +27,10 @@ class GroupController extends Controller
     {
 
         /*
-        * Check if group_name is there in the query string
-        * If group_name is present then we need to filter the group list by group_name
-        * Else return all the groups in the response
-        */
+         * Check if group_name is there in the query string
+         * If group_name is present then we need to filter the group list by group_name
+         * Else return all the groups in the response
+         */
         $groupName = $request->get('group_name');
 
         if ($groupName) {
@@ -197,10 +197,10 @@ class GroupController extends Controller
     public function getGroupMembers(Request $request)
     {
         /*
-        * Check if group_name is there in the query string
-        * If group_name is present then we need to filter the group_members list by group_name
-        * Else return all the group_members in the response
-        */
+         * Check if group_name is there in the query string
+         * If group_name is present then we need to filter the group_members list by group_name
+         * Else return all the group_members in the response
+         */
         $group_name = $request->get('group_name');
         if (app('redis')->exists("$group_name")) {
             $group_members = app('redis')->get("$group_name");
@@ -227,10 +227,10 @@ class GroupController extends Controller
     public function getGroupUsers(Request $request)
     {
         /*
-        * Check if group_name is there in the query string
-        * If group_name is present then we need to filter the group_members list by group_name
-        * Else return all the group_members in the response
-        */
+         * Check if group_name is there in the query string
+         * If group_name is present then we need to filter the group_members list by group_name
+         * Else return all the group_members in the response
+         */
         $group_name = $request->get('group_name');
         $result = Group::where('group_name', $group_name)
         //where('group_owner_id', $this->user->id)

@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Group;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Response;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PublicGroupController extends Controller
 {

@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-
-
-
 class GroupTest extends TestCase
 {
 
@@ -18,7 +15,6 @@ class GroupTest extends TestCase
     public $publicGroup;
     public $privateGroup;
     public $newUser;
-
 
     /**
      * Helper function
@@ -66,7 +62,7 @@ class GroupTest extends TestCase
         $parameters = [
             'username' => $userName,
             'password' => $newPassword,
-            'email' => $userName."@gmail.com",
+            'email' => $userName . "@gmail.com",
             'mobile' => $userObj->generateCode(10),
             'address' => $address,
         ];
@@ -189,7 +185,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example for fetching group for a given group_id,
      * It should return Status Code : 200,
      * @return void
@@ -216,7 +212,7 @@ class GroupTest extends TestCase
         );
     }
 
-     /**
+    /**
      * A example for fetching group for a given group_id(invalid group)id),
      * It should return Status Code : 404,
      * @return void
@@ -263,7 +259,7 @@ class GroupTest extends TestCase
 
     }
 
-     /**
+    /**
      * A example for updating an existing group, when mandatory fields are missing
      * It should return Status Code : 422
      * @return void
@@ -277,7 +273,7 @@ class GroupTest extends TestCase
             'is_public_group' => "",
             'group_desc' => "",
         ];
-        $response = $this->put("http://localhost:8000/api/v1/groups/".$groupId, $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $response = $this->put("http://localhost:8000/api/v1/groups/" . $groupId, $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(422);
     }
 
@@ -298,7 +294,7 @@ class GroupTest extends TestCase
         $jwtToken = JWTAuth::fromUser($user);
 
         $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/".$groupId."/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(409);
 
@@ -348,7 +344,7 @@ class GroupTest extends TestCase
 
         $jwtToken = $this->createUserReturnToken();
         $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/".$groupId."/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
 
@@ -358,7 +354,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example for user to join a private group
      * It should return Status Code : 401
      * @return void
@@ -381,7 +377,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example for user to leave a public group
      * It should return Status Code : 200
      * @return void
@@ -391,7 +387,7 @@ class GroupTest extends TestCase
         $response = $this->publicGroup;
         $groupId = $response['data']['id'];
 
-        $response =$this->createUser();
+        $response = $this->createUser();
         $userEmail = $response['data']['email'];
 
         $user = User::where('email', $userEmail)->first();
@@ -408,12 +404,12 @@ class GroupTest extends TestCase
         ]);
         $userData = [
             'group_id' => $groupId,
-            'user_email' => $userEmail
+            'user_email' => $userEmail,
         ];
         return $userData;
     }
 
-     /**
+    /**
      * A example for user to leave a public group
      * It should return Status Code : 409
      * @return void
@@ -458,7 +454,7 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' =>  $user->id];
+        $parameters = ['user_id' => $user->id];
         $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
@@ -469,7 +465,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example where owner of the group can add a user to his group
      * It should return Status Code : 200
      * @return void
@@ -527,7 +523,7 @@ class GroupTest extends TestCase
 
     }
 
-     /**
+    /**
      * A example where owner of the group trying to remove a user from public group
      * It should return Status Code : 401
      * @return void
@@ -607,7 +603,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example of getting all group members for a given group_name
      * It should return Status Code : 200
      * @return void
@@ -631,7 +627,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example of getting all group members for a given group_name, testing validation error message,
      * It should return Status Code : 422
      * @return void
@@ -647,7 +643,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 410,
      * CAUTION : Please provide existing group_id as an input in query string parameter i.e 97 needs to be changed
@@ -663,7 +659,7 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $response = $this->delete("http://localhost:8000/api/v1/groups/".$groupId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $response = $this->delete("http://localhost:8000/api/v1/groups/" . $groupId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(410);
         $this->seeJsonStructure([
@@ -672,7 +668,7 @@ class GroupTest extends TestCase
         ]);
     }
 
-     /**
+    /**
      * A example for Deleting an existing group when unauthorized user trying to delete a user,
      * It should return Status Code : 401,
      *
@@ -682,17 +678,10 @@ class GroupTest extends TestCase
         $response = $this->privateGroup;
         $groupId = $response['data']['id'];
 
-        $groupOwners = Group::select('group_owner_id')->distinct()->pluck('group_owner_id');
-        $user = User::whereNotIn('id', $groupOwners)->first();
-        //echo "groupId ".$groupId." userId ". $user->id." userEmail ". $user->email; exit;
-        $userEmail = $user->email;
-        $userData = User::where('email', $userEmail)->first();
-        $jwtToken = JWTAuth::fromUser($userData);
+        $jwtToken = $this->createUserReturnToken();
 
-        $response = $this->delete("http://localhost:8000/api/v1/groups/".$groupId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
-        if($response['status'] != 410){
-            $this->seeStatusCode(401);
-        }
+        $response = $this->delete("http://localhost:8000/api/v1/groups/" . $groupId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $this->seeStatusCode(401);
         $this->seeJsonStructure([
             'status',
             'message',
@@ -714,8 +703,5 @@ class GroupTest extends TestCase
             'message',
         ]);
     }
-
-
-
 
 }

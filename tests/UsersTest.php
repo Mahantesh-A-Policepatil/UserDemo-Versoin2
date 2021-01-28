@@ -1,10 +1,8 @@
 <?php
 
-
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsersTest extends TestCase
@@ -238,13 +236,7 @@ class UsersTest extends TestCase
         $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
-        /*
-        $latestUser = User::latest()->first();
-        $this->assertEquals($parameters['username'], $latestUser['username']);
-        $this->assertEquals($parameters['email'], $latestUser['email']);
-        $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-        $this->assertEquals($parameters['address'], $latestUser['address']);
-         */
+
         $this->seeJsonStructure(
             ['data' =>
                 [
@@ -281,14 +273,6 @@ class UsersTest extends TestCase
         $response = $this->post("http://localhost:8000/api/v1/users/register", $parameters, [])->response->getOriginalContent();
 
         $this->seeStatusCode(422);
-        //print_r($response);
-        /*
-    $latestUser = User::latest()->first();
-    $this->assertEquals($parameters['username'], $latestUser['username']);
-    $this->assertEquals($parameters['email'], $latestUser['email']);
-    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-    $this->assertEquals($parameters['address'], $latestUser['address']);
-     */
 
     }
     /**
@@ -330,15 +314,7 @@ class UsersTest extends TestCase
                 ],
             ]
         );
-        /*
-    $latestUser = User::find(8);
 
-    $this->assertEquals($parameters['username'], $latestUser['username']);
-    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-    $this->assertEquals($parameters['email'], $latestUser['email']);
-    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-    $this->assertEquals($parameters['address'], $latestUser['address']);
-     */
     }
 
     /**
@@ -367,15 +343,6 @@ class UsersTest extends TestCase
         $response = $this->put("http://localhost:8000/api/v1/users/" . $userId, $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
         $this->seeStatusCode(422);
 
-        /*
-    $latestUser = User::find(8);
-
-    $this->assertEquals($parameters['username'], $latestUser['username']);
-    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-    $this->assertEquals($parameters['email'], $latestUser['email']);
-    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-    $this->assertEquals($parameters['address'], $latestUser['address']);
-     */
     }
 
     /**
@@ -404,15 +371,6 @@ class UsersTest extends TestCase
         $response = $this->put("http://localhost:8000/api/v1/users/" . $userData->id, $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
         $this->seeStatusCode(401);
 
-        /*
-    $latestUser = User::find(8);
-
-    $this->assertEquals($parameters['username'], $latestUser['username']);
-    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-    $this->assertEquals($parameters['email'], $latestUser['email']);
-    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-    $this->assertEquals($parameters['address'], $latestUser['address']);
-     */
     }
 
     /**
@@ -439,15 +397,6 @@ class UsersTest extends TestCase
         $response = $this->put("http://localhost:8000/api/v1/users/9900000", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
         $this->seeStatusCode(404);
 
-        /*
-    $latestUser = User::find(8);
-
-    $this->assertEquals($parameters['username'], $latestUser['username']);
-    //$this->assertEquals(Hash::make($parameters['password']), $latestUser['password']);
-    $this->assertEquals($parameters['email'], $latestUser['email']);
-    $this->assertEquals($parameters['mobile'], $latestUser['mobile']);
-    $this->assertEquals($parameters['address'], $latestUser['address']);
-     */
     }
 
     /**
@@ -476,7 +425,7 @@ class UsersTest extends TestCase
 
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
-        $response = $this->delete("http://localhost:8000/api/v1/users/".$userId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $response = $this->delete("http://localhost:8000/api/v1/users/" . $userId, [], ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(410);
         $this->seeJsonStructure([
