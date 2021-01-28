@@ -20,7 +20,7 @@ class PublicGroupController extends Controller
      */
     public function joinPublicGroup(Request $request, $group_id)
     {
- //echo "User_id ".Auth::user()->id." Group_id ".$group_id; exit;
+ //echo "User_id ".auth()->user()->id." Group_id ".$group_id; exit;
         if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
             ->exists()

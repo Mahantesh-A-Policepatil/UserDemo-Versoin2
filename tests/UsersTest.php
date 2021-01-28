@@ -1,10 +1,10 @@
 <?php
-namespace tests;
+
 
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use tests\TestCase;
+
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsersTest extends TestCase

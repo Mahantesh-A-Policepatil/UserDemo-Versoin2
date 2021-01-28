@@ -1,7 +1,7 @@
 <?php
 
 
-namespace tests;
+
 
 use Laravel\Lumen\Testing\TestCase as BaseTestCase;
 use App\User;

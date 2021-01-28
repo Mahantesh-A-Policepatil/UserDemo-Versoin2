@@ -30,7 +30,11 @@
    * @return \Illuminate\Http\Response
    */
     public function index(Request $request){
-
+      /*
+        * Check if user name is there in the query string
+        * If user name is present then we need to filter the user list by user_name
+        * Else return all the users in the response
+        */
       $userName = $request->get('name');
 
       if($userName){
@@ -66,6 +70,7 @@
    * @return \Illuminate\Http\Response
    */
     public function show($user_id){
+
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.'], 404);
@@ -74,6 +79,7 @@
       $resource = new Item($user, new UserTransformer());
       $user = $manager->createData($resource)->toArray();
       return $user;
+
     }
 
    /**
@@ -83,6 +89,7 @@
    */
     public function store(Request $request){
 
+      // validate the data
       $this->validate($request, [
           'username'=>'required',
           'email'=>'required|email|unique:users',
@@ -90,6 +97,7 @@
           'password'=>'required'
       ]);
 
+       // Create a new user
        $user = new User([
           'username' => $request->get('username'),
           'email' => $request->get('email'),
@@ -114,12 +122,12 @@
    * @return \Illuminate\Http\Response
    */
     public function update(Request $request, $user_id){
-
+      // Check if the user exists.
       $user  = User::find($user_id);
       if(!$user) {
         return response()->json(['status' => 'User does not exists.'], 404);
       }
-
+      // Unauthorized user should not be authorized for update operation
       if($user_id !=  Auth::user()->id){
         return response()->json(['error' => 'You are not authorized to update'], 401);
       }

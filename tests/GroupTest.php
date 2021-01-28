@@ -1,5 +1,4 @@
 <?php
-namespace tests;
 
 use App\Group;
 use App\User;
@@ -7,10 +6,8 @@ use Illuminate\Support\Facades\Config;
 //use Config;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use tests\TestCase;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use DB;
+
+
 
 
 class GroupTest extends TestCase
