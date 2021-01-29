@@ -66,15 +66,15 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     //$router->get('groupUsers', 'GroupController@getGroupUsers');
 
     //The following route is for logged-in user to join a public group
-    $router->post('groups/{group_id}/join', 'PublicGroupController@joinPublicGroup');
+    $router->post('groups/join', 'PublicGroupController@joinPublicGroup');
 
     //The following route is for logged-in user to leave a public group
-    $router->post('groups/{group_id}/leave', 'PublicGroupController@leavePublicGroup');
+    $router->post('groups/leave', 'PublicGroupController@leavePublicGroup');
 
     //The following route is for group-owner to add users into his private group
-    $router->post('groups/{group_id}/add', 'PrivateGroupController@addMemberToPrivateGroup');
+    $router->post('groups/add', 'PrivateGroupController@addMemberToPrivateGroup');
 
     //The following route is for group-owner to remove users from his private group
-    $router->post('groups/{group_id}/remove', 'PrivateGroupController@removeMemberFromPrivateGroup');
+    $router->post('groups/remove', 'PrivateGroupController@removeMemberFromPrivateGroup');
 
 });

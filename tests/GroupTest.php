@@ -293,8 +293,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(409);
 
@@ -343,8 +343,8 @@ class GroupTest extends TestCase
         $groupId = $response['data']['id'];
 
         $jwtToken = $this->createUserReturnToken();
-        $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
 
@@ -366,8 +366,8 @@ class GroupTest extends TestCase
 
         $jwtToken = $this->createUserReturnToken();
 
-        $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/join", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
 
@@ -393,8 +393,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/leave", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/leave", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
 
@@ -427,8 +427,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = [];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/leave", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/leave", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(409);
 
@@ -454,8 +454,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => $user->id];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['user_id' => $user->id, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
 
@@ -481,8 +481,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => $user->id];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['user_id' => $user->id, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
 
@@ -511,8 +511,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => $addedUser];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['user_id' => $addedUser, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/add", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(409);
 
@@ -541,8 +541,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => $addedUser];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['user_id' => $addedUser, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(401);
 
@@ -569,8 +569,8 @@ class GroupTest extends TestCase
         $user = User::where('email', $userEmail)->first();
         $jwtToken = JWTAuth::fromUser($user);
 
-        $parameters = ['user_id' => $addedUser];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
+        $parameters = ['user_id' => $addedUser, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/remove", $parameters, ['HTTP_Authorization' => "bearer $jwtToken"])->response->getOriginalContent();
 
         $this->seeStatusCode(200);
 
@@ -592,8 +592,8 @@ class GroupTest extends TestCase
         $response = $this->privateGroup;
         $groupId = $response['data']['id'];
 
-        $parameters = ['user_id' => $addedUser];
-        $response = $this->post("http://localhost:8000/api/v1/groups/" . $groupId . "/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
+        $parameters = ['user_id' => $addedUser, 'group_id' => $groupId];
+        $response = $this->post("http://localhost:8000/api/v1/groups/remove", $parameters, ['HTTP_Authorization' => "bearer $this->token"])->response->getOriginalContent();
 
         $this->seeStatusCode(404);
 

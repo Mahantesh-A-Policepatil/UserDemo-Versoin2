@@ -18,12 +18,13 @@ class PrivateGroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function addMemberToPrivateGroup(Request $request, $group_id)
+    public function addMemberToPrivateGroup(Request $request)
     {
         $this->validate($request, [
             'user_id' => 'required',
+            'group_id' => 'required'
         ]);
-
+        $group_id = $request->group_id;
         if (Group::where('id', '=', $group_id)->where('is_public_group', '=', 1)->exists()) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to add users this group as this is not a private group'], 401);
         }
@@ -49,13 +50,14 @@ class PrivateGroupController extends Controller
  * @param  int  $id
  * @return \Illuminate\Http\Response
  */
-    public function removeMemberFromPrivateGroup(Request $request, $group_id)
+    public function removeMemberFromPrivateGroup(Request $request)
     {
         //echo "User_id ".auth()->user()->id." Group_id ".$group_id; exit;
         $this->validate($request, [
             'user_id' => 'required',
+            'group_id' => 'required'
         ]);
-
+        $group_id = $request->group_id;
         if (Group::where('id', '=', $group_id)->where('is_public_group', '=', 1)->exists()) {
             return response()->json(['status' => 401, 'message' => 'You are not authorized to remove users this group as this is not a private group'], 401);
         }

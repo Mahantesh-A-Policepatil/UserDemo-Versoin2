@@ -17,8 +17,12 @@ class PublicGroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function joinPublicGroup(Request $request, $group_id)
+    public function joinPublicGroup(Request $request)
     {
+        $this->validate($request, [
+            'group_id' => 'required',
+        ]);
+        $group_id = $request->group_id;
         // Unauthorized user should not be authorized for update operation
         if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
@@ -43,9 +47,12 @@ class PublicGroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function leavePublicGroup(Request $request, $group_id)
+    public function leavePublicGroup(Request $request)
     {
-
+        $this->validate($request, [
+            'group_id' => 'required',
+        ]);
+        $group_id = $request->group_id;
         if (Group::where('id', '=', $group_id)
             ->where('is_public_group', '=', 0)
             ->exists()
